@@ -1,0 +1,51 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0-windows</TargetFramework>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+		<UseWindowsForms>true</UseWindowsForms>
+  </PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+		<OutputType>Exe</OutputType>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)' != 'Debug'">
+		<OutputType>WinExe</OutputType>
+	</PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="HandyControl" Version="3.4.0" />
+    <PackageReference Include="ImageSizeReader" Version="1.0.1" />
+    <PackageReference Include="MetadataExtractor" Version="2.8.1" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
+    <PackageReference Include="PropertyChanged.Fody" Version="4.1.0" />
+    <PackageReference Include="WPF-UI" Version="3.0.0-preview.4" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1 " />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1 " />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Assets\app.ico" />
+    <None Remove="Assets\app.png" />
+    <None Remove="Assets\font.ttf" />
+    <None Remove="Assets\wpfui-icon-256.png" />
+    <None Remove="Assets\wpfui-icon-1024.png" />
+    <None Remove="Assets\暂无图片.png" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Resource Include="Assets\app.ico" />
+    <Resource Include="Assets\app.png" />
+    <Resource Include="Assets\font.ttf" />
+    <Resource Include="Assets\wpfui-icon-256.png" />
+    <Resource Include="Assets\wpfui-icon-1024.png" />
+    <Resource Include="Assets\暂无图片.png" />
+  </ItemGroup>
+
+</Project>

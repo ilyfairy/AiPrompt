@@ -1,0 +1,370 @@
+<Page
+    x:Class="AiPrompt.Views.Pages.DataPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:AiPrompt.Views.Pages"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="clr-namespace:AiPrompt.Models"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:helpers="clr-namespace:AiPrompt.Helpers"
+    xmlns:handy="https://handyorg.github.io/handycontrol"
+    xmlns:vm="clr-namespace:AiPrompt.ViewModels.Pages"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    Title="DataPage"
+    d:DataContext="{d:DesignInstance local:DataPage,IsDesignTimeCreatable=False}"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
+    ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    ScrollViewer.CanContentScroll="False"
+    mc:Ignorable="d"
+    FontFamily="{StaticResource GlobalFont}"
+    >
+    <Page.InputBindings>
+        <KeyBinding Key="Esc" Command="{Binding ViewModel.CloseImageCommand}"/>
+    </Page.InputBindings>
+
+    <Page.Resources>
+        <helpers:PathToImageBrushConverter x:Key="PathToImageBrushConverter"/>
+        <helpers:SizeBalanceConverter x:Key="SizeBalanceConverter"/>
+        <helpers:Double4ToRectConverter x:Key="Double4ToRectConverter"/>
+        <helpers:StringConcatConverter x:Key="StringConcatConverter"/>
+
+        <PowerEase x:Key="FadeIn" EasingMode="EaseIn" />
+        <PowerEase x:Key="FadeOut" EasingMode="EaseOut" />
+
+        <!--Prompt按钮样式-->
+        <Style x:Key="ImageButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="BorderThickness" Value="1" />
+
+            <!--按钮的模板-->
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border
+                            x:Name="ContentBorder"
+                            Width="{TemplateBinding Width}"
+                            Height="{TemplateBinding Height}"
+                            MinWidth="{TemplateBinding MinWidth}"
+                            MinHeight="{TemplateBinding MinHeight}"
+                            Padding="{TemplateBinding Padding}"
+                            HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                            VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{TemplateBinding Border.CornerRadius}"
+                            >
+                            <ContentPresenter
+                                x:Name="ContentPresenter"
+                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                Content="{TemplateBinding Content}"
+                                ContentTemplate="{TemplateBinding ContentTemplate}"
+                                TextElement.Foreground="{TemplateBinding Foreground}"
+                                />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+            <!--按下触发器-->
+            <Style.Triggers>
+                <Trigger Property="IsPressed" Value="True">
+                    <!--按下开始动画-->
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation Storyboard.TargetProperty="Background.Color" From="Transparent" To="#20BDBDBD" Duration="0:0:0.1" EasingFunction="{StaticResource FadeIn}" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+
+                    <!--按下结束动画-->
+                    <Trigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation Storyboard.TargetProperty="Background.Color" From="#20BDBDBD" To="Transparent" Duration="0:0:0.1" EasingFunction="{StaticResource FadeOut}" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.ExitActions>
+                </Trigger>
+
+                <!--鼠标悬浮触发器-->
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="BorderBrush" Value="#B898DC" />
+                    <Setter Property="BorderThickness" Value="2"/>
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ThicknessAnimation Storyboard.TargetProperty="BorderThickness" From="0.25" To="2" Duration="0:0:0.1" />
+                                <ColorAnimation Storyboard.TargetProperty="BorderBrush.Color" From="Gray" To="#B898DC" Duration="0:0:0.1"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+                    <Trigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ThicknessAnimation Storyboard.TargetProperty="BorderThickness" From="2" To="0.25" Duration="0:0:0.1" />
+                                <ColorAnimation Storyboard.TargetProperty="BorderBrush.Color" From="#B898DC" To="Gray" Duration="0:0:0.1"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.ExitActions>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="False">
+                    <Setter Property="BorderBrush" Value="Gray"/>
+                    <Setter Property="BorderThickness" Value="0.25"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+    </Page.Resources>
+
+    <Grid Background="Transparent">
+        <ui:VirtualizingItemsControl
+            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+            ItemsSource="{Binding ViewModel.Images, Mode=OneWay}"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            VirtualizingPanel.CacheLengthUnit="Item"
+            Visibility="Visible"
+            >
+            <ui:VirtualizingItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <handy:WaterfallPanel Orientation="Horizontal" AutoGroup="True" DesiredLength="{x:Static vm:DataViewModel.ImageWidth}" />
+                </ItemsPanelTemplate>
+            </ui:VirtualizingItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border Background="Transparent" Margin="0 0 0 10">
+                        <Border.Resources>
+                            <!--<ImageBrush x:Key="ImageKey" ImageSource="{Binding}"/>-->
+                            <!--<helpers:BindingProxy x:Key="ButtonImage" Value="{Binding Converter={StaticResource PathToImageBrushConverter}}" />-->
+                            <!--<helpers:BindingProxy x:Key="ButtonSize" Value="{Binding Source={StaticResource ButtonImage},Path=Value.ImageSource,Converter={StaticResource SizeBalanceConverter},ConverterParameter=200}" />-->
+                        </Border.Resources>
+
+                        <Grid Background="Transparent" Margin="0" Width="{Binding ZoomWidth,Mode=OneWay}" Height="{Binding ZoomHeight,Mode=OneWay}">
+                            <Image Width="{x:Static vm:DataViewModel.ImageWidth}">
+                                <Image.Source>
+                                    <BitmapImage DecodePixelWidth="{Binding RenderWidth,Mode=OneWay}" UriSource="{Binding Path,Mode=OneWay}" />
+                                </Image.Source>
+                                <Image.Clip>
+                                    <RectangleGeometry RadiusX="5" RadiusY="5">
+                                        <RectangleGeometry.Rect>
+                                            <MultiBinding Converter="{StaticResource Double4ToRectConverter}">
+                                                <Binding Source="0"/>
+                                                <Binding Source="0"/>
+                                                <Binding Path="ZoomWidth"/>
+                                                <Binding Path="ZoomHeight"/>
+                                            </MultiBinding>
+                                        </RectangleGeometry.Rect>
+                                    </RectangleGeometry>
+                                </Image.Clip>
+                            </Image>
+                            <ui:Button
+                                Style="{StaticResource ImageButtonStyle}"
+                                Padding="0"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                Appearance="Secondary"
+                                FontSize="25"
+                                Icon="Fluent24"
+                                Background="Transparent"
+                                Command="{Binding RelativeSource={RelativeSource AncestorType=Page},Path=ViewModel.ShowImageCommand}"
+                                CommandParameter="{Binding}"
+                                >
+                                <!--<ui:Button.Triggers>
+                                <EventTrigger RoutedEvent="Button.Click">
+                                <BeginStoryboard>
+                                <Storyboard>
+                                <DoubleAnimation Storyboard.TargetName="show" Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="1" />
+                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="show" Storyboard.TargetProperty="Visibility">
+                                <DiscreteObjectKeyFrame KeyTime="0" Value="Visible"/>
+                                </ObjectAnimationUsingKeyFrames>
+                                </Storyboard>
+                                </BeginStoryboard>
+                                </EventTrigger>
+                                </ui:Button.Triggers>-->
+                            </ui:Button>
+
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ui:VirtualizingItemsControl>
+
+
+        <!--图片信息面板-->
+        <Border x:Name="show" Background="{Binding ViewModel.GlobalResources.ThemeColor3}">
+            <Border.Style>
+                <!--淡出淡入-->
+                <Style TargetType="Border">
+                    <Setter Property="Visibility" Value="Hidden"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ViewModel.IsShow}" Value="True">
+                            <DataTrigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.2" />
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility">
+                                            <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{x:Static Visibility.Visible}"/>
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.EnterActions>
+                            <DataTrigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1" To="0" Duration="0:0:0.2"/>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility" Duration="0:0:0.2">
+                                            <DiscreteObjectKeyFrame KeyTime="0:0:0.2" Value="{x:Static Visibility.Hidden}"/>
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.ExitActions>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="400"/>
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0">
+                    <ui:Image Source="{Binding ViewModel.Current.Path}" Stretch="Uniform" />
+                </Border>
+
+                <Border Grid.Column="1" Background="Transparent">
+                    <Grid>
+                        <Button Content="X" HorizontalAlignment="Right" VerticalAlignment="Top" Command="{Binding ViewModel.CloseImageCommand}"/>
+                        <StackPanel Orientation="Vertical">
+                            <Border Padding="10 0" Margin="0 10 0 0">
+                                <Border.Resources>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="FontSize" Value="15"/>
+                                        <Setter Property="Margin" Value="0 15 0 5"/>
+                                    </Style>
+                                </Border.Resources>
+                                <StackPanel Orientation="Vertical">
+                                    <UniformGrid Columns="2" Margin="0 0 0 10">
+                                        <StackPanel Orientation="Vertical" Margin="0 0 5 0">
+                                            <TextBlock Text="模型" />
+                                            <TextBox Text="{Binding ViewModel.Current.TextualData.Model,Mode=OneWay}" IsReadOnly="True" />
+                                        </StackPanel>
+                                        <StackPanel Orientation="Vertical" Margin="0 0 5 0">
+                                            <TextBlock Text="Clip Skip" />
+                                            <TextBox Text="{Binding ViewModel.Current.TextualData.ClipSkip,Mode=OneWay}" IsReadOnly="True" />
+                                        </StackPanel>
+                                    </UniformGrid>
+
+                                    <TextBlock Text="正面提示词" Margin="0 0 0 5"/>
+                                    <TextBox MinLines="5" MaxLines="5" IsReadOnly="True" TextWrapping="Wrap" Text="{Binding ViewModel.Current.TextualData.Prompt,Mode=OneWay}" />
+
+                                    <TextBlock Text="负面提示词"/>
+                                    <TextBox MinLines="5" MaxLines="5" IsReadOnly="True" TextWrapping="Wrap" Text="{Binding ViewModel.Current.TextualData.NegativePrompt,Mode=OneWay}" />
+
+                                    <UniformGrid Columns="2">
+
+                                        <StackPanel Orientation="Vertical" Margin="0 0 5 0">
+                                            <TextBlock Text="尺寸" />
+                                            <TextBox IsReadOnly="True" Text="{Binding ViewModel.Current.TextualData.Size}">
+                                                <!--<TextBox.Text>
+                                                <MultiBinding Converter="{StaticResource StringConcatConverter}">
+                                                <Binding Path="ViewModel.Current.ImagePrompt.Width"/>
+                                                <Binding Path="." Source="x"/>
+                                                <Binding Path="ViewModel.Current.ImagePrompt.Height"/>
+                                                </MultiBinding>
+                                                </TextBox.Text>-->
+                                            </TextBox>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Vertical" Margin="5 0 0 0">
+                                            <TextBlock Text="采样算法" />
+                                            <TextBox Text="{Binding ViewModel.Current.TextualData.Sampler,Mode=OneWay}" IsReadOnly="True" />
+                                        </StackPanel>
+
+                                        <StackPanel Orientation="Vertical" Margin="0 0 5 0">
+                                            <TextBlock Text="迭代步数(Setps)" />
+                                            <TextBox Text="{Binding ViewModel.Current.TextualData.Setps,Mode=OneWay}" IsReadOnly="True" />
+                                        </StackPanel>
+                                        <StackPanel Orientation="Vertical" Margin="5 0 0 0">
+                                            <TextBlock Text="提示词相关性(CFG Scale)" />
+                                            <TextBox Text="{Binding ViewModel.Current.TextualData.CfgScale,Mode=OneWay}" IsReadOnly="True" />
+                                        </StackPanel>
+
+                                        <StackPanel Orientation="Vertical" Margin="0 0 5 0">
+                                            <TextBlock Text="随机种子" />
+                                            <TextBox Text="{Binding ViewModel.Current.TextualData.Seed,Mode=OneWay}" IsReadOnly="True" />
+                                        </StackPanel>
+
+                                    </UniformGrid>
+
+                                    <UniformGrid Columns="2">
+
+                                        <StackPanel Orientation="Vertical" Margin="0 0 5 0">
+                                            <TextBlock Text="修复方式" />
+                                            <TextBox Text="{Binding ViewModel.Current.TextualData.HiresUpscaler,Mode=OneWay}" IsReadOnly="True" />
+                                        </StackPanel>
+                                        <StackPanel Orientation="Vertical" Margin="5 0 0 0">
+                                            <TextBlock Text="高分辨率步数" />
+                                            <TextBox Text="{Binding ViewModel.Current.TextualData.HiresSteps,Mode=OneWay}" IsReadOnly="True" />
+                                        </StackPanel>
+
+                                        <StackPanel Orientation="Vertical" Margin="0 0 5 0">
+                                            <TextBlock Text="重绘幅度" />
+                                            <TextBox Text="{Binding ViewModel.Current.TextualData.DenoisingStrength,Mode=OneWay}" IsReadOnly="True" />
+                                        </StackPanel>
+                                        <StackPanel Orientation="Vertical" Margin="5 0 0 0">
+                                            <TextBlock Text="放大倍数" />
+                                            <TextBox Text="{Binding ViewModel.Current.TextualData.HiresResize,Mode=OneWay}" IsReadOnly="True" />
+                                        </StackPanel>
+
+                                    </UniformGrid>
+
+
+
+
+
+
+
+
+
+
+                                    <StackPanel Visibility="Hidden" Margin="0 10 0 0" Orientation="Horizontal">
+                                        <Border Width="50" Height="50" BorderThickness="1" BorderBrush="Black">
+                                            <Border.Background>
+                                                <SolidColorBrush Color="{DynamicResource SystemAccentColor}"/>
+                                            </Border.Background>
+                                        </Border>
+                                        <Border Width="50" Height="50" BorderThickness="1" BorderBrush="Black">
+                                            <Border.Background>
+                                                <SolidColorBrush Color="{DynamicResource SystemAccentColorPrimary}"/>
+                                            </Border.Background>
+                                        </Border>
+                                        <Border Width="50" Height="50" BorderThickness="1" BorderBrush="Black">
+                                            <Border.Background>
+                                                <SolidColorBrush Color="{DynamicResource SystemAccentColorSecondary}"/>
+                                            </Border.Background>
+                                        </Border>
+                                        <Border Width="50" Height="50" BorderThickness="1" BorderBrush="Black">
+                                            <Border.Background>
+                                                <SolidColorBrush Color="{DynamicResource SystemAccentColorTertiary}"/>
+                                            </Border.Background>
+                                        </Border>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+            </Grid>
+        </Border>
+    </Grid>
+
+
+</Page>

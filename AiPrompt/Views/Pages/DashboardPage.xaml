@@ -1,0 +1,389 @@
+﻿<Page
+    x:Class="AiPrompt.Views.Pages.DashboardPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:AiPrompt.Views.Pages"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:helpers="clr-namespace:AiPrompt.Helpers"
+    xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:models="clr-namespace:AiPrompt.Models"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:vm="clr-namespace:AiPrompt.ViewModels.Pages"
+    Title="DashboardPage"
+    d:DataContext="{d:DesignInstance local:DashboardPage,
+    IsDesignTimeCreatable=False}"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
+    ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    mc:Ignorable="d"
+    FontFamily="{StaticResource GlobalFont}"
+    Name="CurrentControl"
+    >
+
+    <Page.InputBindings>
+        <KeyBinding Gesture="Control+R" Command="{Binding ViewModel.LoadTabCommand}"/>
+    </Page.InputBindings>
+
+    <Page.Resources>
+        <helpers:PathToImageBrushConverter x:Key="PathToImageBrushConverter"/>
+        <helpers:ArrayToStringConverter x:Key="ArrayToStringConverter" />
+        <helpers:WeightToStringConverter x:Key="WeightToStringConverter" />
+        <helpers:WeightSwitchBackgroundConverter x:Key="WeightSwitchBackgroundConverter" />
+        <helpers:WeightSwitchConverter x:Key="WeightSwitchConverter" />
+        <helpers:PromptSelectedToBorderBrush x:Key="PromptSelectedToBorderBrush" />
+        <helpers:WeightToNumberStringConverter x:Key="WeightToNumberStringConverter" />
+        <helpers:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <helpers:WeightTextSwitchConverter x:Key="WeightTextSwitchConverter" />
+
+        <PowerEase x:Key="FadeIn" EasingMode="EaseIn" />
+        <PowerEase x:Key="FadeOut" EasingMode="EaseOut" />
+
+        <!--顶部输入框部分按钮样式-->
+        <Style x:Key="BigButton" TargetType="ui:Button" BasedOn="{StaticResource {x:Type ui:Button}}">
+            <Setter Property="Padding" Value="15 10"/>
+        </Style>
+
+        <!--Prompt按钮样式-->
+        <Style x:Key="ImageButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="BorderThickness" Value="1" />
+            <!--<Setter Property="Opacity" Value=".5"/>-->
+
+            <!--按钮的模板-->
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border
+                            x:Name="ContentBorder"
+                            Width="{TemplateBinding Width}"
+                            Height="{TemplateBinding Height}"
+                            MinWidth="{TemplateBinding MinWidth}"
+                            MinHeight="{TemplateBinding MinHeight}"
+                            Padding="{TemplateBinding Padding}"
+                            HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                            VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{TemplateBinding Border.CornerRadius}"
+                            >
+                            <ContentPresenter
+                                x:Name="ContentPresenter"
+                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                Content="{TemplateBinding Content}"
+                                ContentTemplate="{TemplateBinding ContentTemplate}"
+                                TextElement.Foreground="{TemplateBinding Foreground}"
+                                />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+            <!--按下触发器-->
+            <Style.Triggers>
+                <Trigger Property="IsPressed" Value="True">
+                    <!--按下开始动画-->
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1" To="0.8" Duration="0:0:0.1" EasingFunction="{StaticResource FadeIn}" />
+                                <DoubleAnimation Storyboard.TargetProperty="Width" From="{x:Static vm:DashboardViewModel.PromptImageSize}" To="{x:Static vm:DashboardViewModel.PromptImageSizeSmall}" Duration="0:0:0.1" EasingFunction="{StaticResource FadeIn}" />
+                                <DoubleAnimation Storyboard.TargetProperty="Height" From="{x:Static vm:DashboardViewModel.PromptImageSize}" To="{x:Static vm:DashboardViewModel.PromptImageSizeSmall}" Duration="0:0:0.1" EasingFunction="{StaticResource FadeIn}" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+
+                    <!--按下结束动画-->
+                    <Trigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0.8" To="1" Duration="0:0:0.1" EasingFunction="{StaticResource FadeOut}" />
+                                <DoubleAnimation Storyboard.TargetProperty="Width" From="{x:Static vm:DashboardViewModel.PromptImageSizeSmall}" To="{x:Static vm:DashboardViewModel.PromptImageSize}" Duration="0:0:0.1" EasingFunction="{StaticResource FadeOut}" />
+                                <DoubleAnimation Storyboard.TargetProperty="Height" From="{x:Static vm:DashboardViewModel.PromptImageSizeSmall}" To="{x:Static vm:DashboardViewModel.PromptImageSize}" Duration="0:0:0.1" EasingFunction="{StaticResource FadeOut}" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.ExitActions>
+                </Trigger>
+
+                <!--鼠标悬浮触发器-->
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="BorderBrush" Value="#B898DC" />
+                    <Setter Property="BorderThickness" Value="2"/>
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ThicknessAnimation Storyboard.TargetProperty="BorderThickness" From="0.25" To="2" Duration="0:0:0.1" />
+                                <ColorAnimation Storyboard.TargetProperty="BorderBrush.Color" From="Gray" To="#B898DC" Duration="0:0:0.1"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+                    <Trigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ThicknessAnimation Storyboard.TargetProperty="BorderThickness" From="2" To="0.25" Duration="0:0:0.1" />
+                                <ColorAnimation Storyboard.TargetProperty="BorderBrush.Color" From="#B898DC" To="Gray" Duration="0:0:0.1"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.ExitActions>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="False">
+                    <Setter Property="BorderBrush" Value="Gray"/>
+                    <Setter Property="BorderThickness" Value="0.25"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- TabView的样式 -->
+        <Style x:Key="CenteredTabsTabControlStyle" TargetType="TabControl">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabControl">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <!-- 选项卡头部，使用 StackPanel 来居中对齐 -->
+                            <Border>
+                                <WrapPanel IsItemsHost="True"/>
+                                <!--<TabPanel IsItemsHost="True" />-->
+                            </Border>
+
+                            <!-- 选项卡内容 -->
+                            <Border Grid.Row="1" Background="{TemplateBinding Background}" BorderBrush="#30000000" BorderThickness="1">
+                                <ContentPresenter ContentSource="SelectedContent" />
+                            </Border>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
+
+    <Grid VerticalAlignment="Top" Background="Transparent">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="1.2*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!--顶部输入框-->
+        <StackPanel Grid.Row="0" Orientation="Vertical" Margin="-10 0 0 0">
+            <!--正面提示词-->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.2*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="0.3*"/>
+                </Grid.ColumnDefinitions>
+
+                <!--<ui:Button Grid.Column="0" Style="{StaticResource BigButton}" HorizontalAlignment="Center" Command="{Binding ViewModel.Button1Command}">提示词</ui:Button>-->
+                <Label Content="正面提示词" Foreground="{DynamicResource TextFillColorPrimaryBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" />
+
+                <TextBox Grid.Column="1" Text="{Binding ViewModel.PositivePromptText,Mode=OneWay}" MinHeight="100" TextWrapping="Wrap" />
+
+                <UniformGrid Grid.Column="2" Columns="2" Rows="1" VerticalAlignment="Center" Margin="10 0 10 0">
+                    <ui:Button Grid.Column="1" Style="{StaticResource BigButton}" Content="复制" HorizontalAlignment="Center" Command="{Binding ViewModel.PositiveCopyCommand}"></ui:Button>
+                    <ui:Button Grid.Column="1" Style="{StaticResource BigButton}" Content="清空" HorizontalAlignment="Center" Command="{Binding ViewModel.PositiveClearCommand}"></ui:Button>
+
+                    <!--<TextBlock Foreground="{DynamicResource TextFillColorPrimaryBrush}" Text=" 切换权重:" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>-->
+                    <!--<ui:ToggleSwitch IsChecked="{Binding ViewModel.IsWeightConvert,Mode=OneWay,Converter={StaticResource WeightSwitchConverter}}" ToggleButton.Unchecked="ToggleSwitch_Unchecked" HorizontalAlignment="Center" Background="{Binding ViewModel.IsWeightConvert,Converter={StaticResource WeightSwitchBackgroundConverter}}" Click="ToggleSwitch_Click"/>-->
+                </UniformGrid>
+            </Grid>
+
+            <!--负面提示词-->
+            <Grid Margin="0 20 0 0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.2*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="0.3*"/>
+                </Grid.ColumnDefinitions>
+
+                <!--<ComboBox Grid.Column="0" Padding="10" HorizontalAlignment="Center" ItemsSource="{Binding ViewModel.PromptCombo}" SelectedIndex="{Binding ViewModel.Combo2Index}" DisplayMemberPath="Name" />-->
+                <Label Content="负面提示词" Foreground="{DynamicResource TextFillColorPrimaryBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18" />
+
+                <TextBox Grid.Column="1" Text="{Binding ViewModel.NegativePromptText,Mode=OneWay}" Height="100" TextWrapping="Wrap" VerticalScrollBarVisibility="Visible" />
+
+                <UniformGrid Grid.Column="2" Columns="2" Rows="2" Margin="10 0 10 0">
+                    <ui:Button Grid.Column="1" Style="{StaticResource BigButton}" Content="复制" HorizontalAlignment="Center" Command="{Binding ViewModel.NegativeCopyCommand}" ></ui:Button>
+                    <ui:Button Grid.Column="1" Style="{StaticResource BigButton}" Content="清空" HorizontalAlignment="Center" Command="{Binding ViewModel.NegativeClearCommand}" ></ui:Button>
+                    <ui:Button Name="NegativeDefaultButton" Grid.Column="1" Style="{StaticResource BigButton}" Content="默认" HorizontalAlignment="Center" Command="{Binding ViewModel.NegativeDefaultCommand}" ></ui:Button>
+
+                    <ui:Button Grid.Column="1" Width="{Binding Source={x:Reference NegativeDefaultButton},Path=ActualWidth}" Padding="10 10" Style="{StaticResource BigButton}" Content="{Binding ViewModel.WeightMode,Converter={StaticResource WeightTextSwitchConverter},Mode=OneWay}" HorizontalAlignment="Center" Command="{Binding ViewModel.SwitchWeightModeCommand}" BorderThickness="1">
+                    </ui:Button>
+                </UniformGrid>
+            </Grid>
+        </StackPanel>
+
+        <Border Grid.Row="1" Margin="0 25 1 0" Padding="1" Width="{Binding RelativeSource={RelativeSource AncestorType=Grid},Path=ActualWidth}" Background="Transparent" BorderThickness="1 0 0 0" BorderBrush="Transparent" HorizontalAlignment="Left">
+            <ui:TabView Name="TabViewControl" ItemsSource="{Binding ViewModel.Resources.Tabs}" SelectedItem="{Binding ViewModel.CurrentTab,Mode=OneWayToSource}" Style="{StaticResource CenteredTabsTabControlStyle}" Background="Transparent">
+                <ui:TabView.ItemTemplate>
+                    <DataTemplate>
+                        <!--Tab标题-->
+                        <TextBlock FontSize="16" Text="{Binding Title}" />
+                    </DataTemplate>
+                </ui:TabView.ItemTemplate>
+                <ui:TabView.ItemContainerStyle>
+                    <!--TabItem的模板-->
+                    <Style TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
+                        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="TabItem">
+                                    <Border Name="Border" Width="auto" Background="Transparent" BorderThickness="1 1 1 1" BorderBrush="#40555555" CornerRadius="2 2 0 0" Padding="10 8">
+                                        <ContentPresenter ContentSource="Header" />
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Foreground" Value="{Binding Source={x:Static models:GlobalResources.Instance},Path=PrimaryColor}" />
+                                        </Trigger>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter TargetName="Border" Property="Background" Value="{Binding Source={x:Static models:GlobalResources.Instance},Path=PrimaryColor}" />
+                                            <Setter TargetName="Border" Property="BorderBrush" Value="{Binding Source={x:Static models:GlobalResources.Instance},Path=PrimaryColor}"/>
+                                            <Setter Property="Foreground" Value="White"/>
+                                        </Trigger>
+                                        <Trigger Property="IsSelected" Value="False">
+                                            <Setter TargetName="Border" Property="Background" Value="Transparent" />
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ui:TabView.ItemContainerStyle>
+                <ui:TabView.ContentTemplate>
+                    <DataTemplate>
+                        <!-- Tab内容 -->
+                        <Border Padding="5">
+                            <ItemsControl ItemsSource="{Binding Items}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Vertical" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <!-- Block内容 -->
+                                        <StackPanel Orientation="Vertical" Margin="0">
+                                            <StackPanel.Style>
+                                                <Style TargetType="StackPanel">
+                                                    <!--淡入效果动画-->
+                                                    <Style.Triggers>
+                                                        <EventTrigger RoutedEvent="Loaded">
+                                                            <BeginStoryboard>
+                                                                <Storyboard>
+                                                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" From=".5" To="1" Duration="0:0:0.4">
+                                                                        <DoubleAnimation.EasingFunction>
+                                                                            <CircleEase EasingMode="EaseOut"></CircleEase>
+                                                                        </DoubleAnimation.EasingFunction>
+                                                                    </DoubleAnimation>
+                                                                    <ThicknessAnimation Storyboard.TargetProperty="Margin" From="0 8 0 0" To="0 0 0 0" Duration="0:0:0.4">
+                                                                        <ThicknessAnimation.EasingFunction>
+                                                                            <CubicEase EasingMode="EaseOut"></CubicEase>
+                                                                        </ThicknessAnimation.EasingFunction>
+                                                                    </ThicknessAnimation>
+                                                                </Storyboard>
+                                                            </BeginStoryboard>
+                                                        </EventTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </StackPanel.Style>
+
+                                            <TextBlock Text="{Binding Title}" Margin="5 5 0 0" Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontSize="16" FontWeight="Bold"/>
+                                            <ItemsControl ItemsSource="{Binding Items}" Margin="0 10 0 10">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <WrapPanel/>
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <!-- Item -->
+                                                        <Border CornerRadius="5" BorderBrush="{Binding Config.IsSelected,Converter={StaticResource PromptSelectedToBorderBrush}}" BorderThickness="2" Margin="0 0 10 10">
+                                                            <Grid>
+                                                                <Grid.RowDefinitions>
+                                                                    <RowDefinition Height="*"/>
+                                                                    <RowDefinition Height="auto"/>
+                                                                    <RowDefinition Height="auto"/>
+                                                                </Grid.RowDefinitions>
+                                                                <Grid Grid.Row="0" Width="{x:Static vm:DashboardViewModel.PromptImageSize}" Height="{x:Static vm:DashboardViewModel.PromptImageSize}">
+                                                                    <ui:Button
+                                                                        Name="ImageButton"
+                                                                        Grid.Row="0"
+                                                                        Width="{x:Static vm:DashboardViewModel.PromptImageSize}"
+                                                                        Height="{x:Static vm:DashboardViewModel.PromptImageSize}"
+                                                                        AllowDrop="True"
+                                                                        Drop="Button_Drop"
+                                                                        HorizontalAlignment="Center"
+                                                                        VerticalAlignment="Center"
+                                                                        FontSize="25"
+                                                                        Style="{StaticResource ImageButtonStyle}"
+                                                                        Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:DashboardPage}},Path=ViewModel.PromptImageCommand}"
+                                                                        CommandParameter="{Binding}"
+                                                                        >
+                                                                        <!--Background="{Binding Image,Mode=OneWay,Converter={StaticResource PathToImageBrushConverter},ConverterParameter={x:Static Stretch.UniformToFill}}"-->
+                                                                        <ui:Button.Background>
+                                                                            <MultiBinding Converter="{StaticResource PathToImageBrushConverter}" ConverterParameter="{x:Static Stretch.UniformToFill}">
+                                                                                <Binding Path="." />
+                                                                                <Binding Path="Image"/>
+                                                                            </MultiBinding>
+                                                                        </ui:Button.Background>
+
+                                                                        <!--<ui:Button.InputBindings>
+                                                                        <MouseBinding Gesture="Control+LeftClick" Command="{Binding Source={x:Reference Name=CurrentControl},Path=ViewModel.WeightIncCommand}" CommandParameter="{Binding}"/>
+                                                                        <MouseBinding Gesture="Shift+LeftClick" Command="{Binding Source={x:Reference Name=CurrentControl},Path=ViewModel.WeightDecCommand}" CommandParameter="{Binding}"/>
+                                                                        </ui:Button.InputBindings>-->
+
+                                                                        <!--右键菜单-->
+                                                                        <ui:Button.ContextMenu>
+                                                                            <ContextMenu FontSize="14" Background="{Binding Source={x:Static models:GlobalResources.Instance},Path=PrimaryColor}">
+                                                                                <MenuItem Header="重置权重" Command="{Binding Source={x:Reference Name=CurrentControl},Path=ViewModel.WeightResetCommand}" CommandParameter="{Binding}" />
+                                                                                <MenuItem Header="增加权重(+)" Command="{Binding Source={x:Reference Name=CurrentControl},Path=ViewModel.WeightIncCommand}" CommandParameter="{Binding}" />
+                                                                                <MenuItem Header="减少权重(-)" Command="{Binding Source={x:Reference Name=CurrentControl},Path=ViewModel.WeightDecCommand}" CommandParameter="{Binding}" />
+                                                                            </ContextMenu>
+                                                                        </ui:Button.ContextMenu>
+                                                                    </ui:Button>
+                                                                </Grid>
+
+                                                                <!--<Border Grid.Row="0" CornerRadius="5" Margin="2" Width="140" Height="140" Background="Transparent">
+                                                                <b:Interaction.Behaviors>
+                                                                <local:CustomButtonBehavior Button="{x:Reference Name=ImageButton}" />
+                                                                </b:Interaction.Behaviors>
+                                                                </Border>-->
+
+                                                                <Label Grid.Row="1" Width="{x:Static vm:DashboardViewModel.PromptImageSize}" Foreground="{DynamicResource TextFillColorPrimaryBrush}" HorizontalContentAlignment="Center" Content="{Binding PromptCN,Mode=OneWay}" Margin="0 4 0 0"/>
+                                                                <Label Grid.Row="2" Width="{x:Static vm:DashboardViewModel.PromptImageSize}" Foreground="{DynamicResource TextFillColorPrimaryBrush}" HorizontalContentAlignment="Center" Content="{Binding PromptEN,Mode=OneWay}"/>
+
+                                                                <Border Grid.ColumnSpan="99" Grid.RowSpan="99" Visibility="{Binding Config.IsSelected,Converter={StaticResource BooleanToVisibilityConverter}}" Margin="-10 -5" Padding="5 1" CornerRadius="5" VerticalAlignment="Bottom" HorizontalAlignment="Right" Background="{Binding Source={x:Static models:GlobalResources.Instance},Path=PrimaryColor}">
+                                                                    <TextBlock Foreground="White">
+                                                                        <TextBlock.Text>
+                                                                            <MultiBinding Converter="{StaticResource WeightToNumberStringConverter}">
+                                                                                <Binding Path="Config.IsSelected"/>
+                                                                                <Binding Path="Config.Weight"/>
+                                                                            </MultiBinding>
+                                                                        </TextBlock.Text>
+                                                                    </TextBlock>
+                                                                </Border>
+                                                            </Grid>
+                                                        </Border>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Border>
+                    </DataTemplate>
+                </ui:TabView.ContentTemplate>
+            </ui:TabView>
+        </Border>
+    </Grid>
+</Page>
