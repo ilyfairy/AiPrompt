@@ -33,8 +33,6 @@
     <None Remove="Assets\app.ico" />
     <None Remove="Assets\app.png" />
     <None Remove="Assets\font.ttf" />
-    <None Remove="Assets\wpfui-icon-256.png" />
-    <None Remove="Assets\wpfui-icon-1024.png" />
     <None Remove="Assets\暂无图片.png" />
   </ItemGroup>
 
@@ -43,8 +41,6 @@
     <Resource Include="Assets\app.ico" />
     <Resource Include="Assets\app.png" />
     <Resource Include="Assets\font.ttf" />
-    <Resource Include="Assets\wpfui-icon-256.png" />
-    <Resource Include="Assets\wpfui-icon-1024.png" />
     <Resource Include="Assets\暂无图片.png" />
   </ItemGroup>
 
