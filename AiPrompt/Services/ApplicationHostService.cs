@@ -7,6 +7,7 @@ using AiPrompt.Views.Pages;
 using AiPrompt.Views.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Wpf.Ui.Appearance;
 
 namespace AiPrompt.Services
 {
@@ -46,7 +47,9 @@ namespace AiPrompt.Services
         private async Task HandleActivationAsync()
         {
             await Task.CompletedTask;
-
+#if DEBUG
+            //Theme.Apply(ThemeType.Light); // maybe throw Exception
+#endif
             if (!Application.Current.Windows.OfType<MainWindow>().Any())
             {
                 var navigationWindow = _serviceProvider.GetRequiredService<MainWindow>();
@@ -62,7 +65,7 @@ namespace AiPrompt.Services
                 return;
             }
 
-            navigationWindow.NavigationView.Navigate(typeof(DashboardPage));
+            navigationWindow.NavigationView.Navigate(typeof(TagsPage));
         }
     }
 }

@@ -49,10 +49,10 @@ namespace AiPrompt
                 services.AddSingleton<ISnackbarService, SnackbarService>();
                 services.AddSingleton<IContentDialogService, ContentDialogService>();
 
-                services.AddSingleton<DashboardPage>();
+                services.AddSingleton<TagsPage>();
                 services.AddSingleton<DashboardViewModel>();
 
-                services.AddSingleton<DataPage>();
+                services.AddSingleton<ImagesPage>();
                 services.AddSingleton<DataViewModel>();
 
                 services.AddSingleton<SettingsPage>();

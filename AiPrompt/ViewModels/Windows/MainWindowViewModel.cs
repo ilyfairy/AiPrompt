@@ -23,13 +23,13 @@ namespace AiPrompt.ViewModels.Windows
             {
                 Content = "首页",
                 Icon = new SymbolIcon { Symbol = SymbolRegular.Home24 },
-                TargetPageType = typeof(Views.Pages.DashboardPage)
+                TargetPageType = typeof(Views.Pages.TagsPage)
             },
             new NavigationViewItem()
             {
                 Content = "图片",
                 Icon = new SymbolIcon { Symbol = SymbolRegular.Image24 },
-                TargetPageType = typeof(Views.Pages.DataPage)
+                TargetPageType = typeof(Views.Pages.ImagesPage)
             }
         };
 

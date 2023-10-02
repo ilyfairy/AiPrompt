@@ -14,7 +14,7 @@ using Wpf.Ui.Controls;
 
 namespace AiPrompt.ViewModels.Pages;
 
-public partial class DashboardViewModel : ObservableObject, INavigationAware
+public partial class DashboardViewModel : ObservableObject // , INavigationAware
 {
     public static double PromptImageSize { get; } = 190;
     public static double PromptImageSizeSmall { get; } = 180;

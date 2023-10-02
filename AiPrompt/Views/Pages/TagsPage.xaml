@@ -1,5 +1,5 @@
 ﻿<Page
-    x:Class="AiPrompt.Views.Pages.DashboardPage"
+    x:Class="AiPrompt.Views.Pages.TagsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -12,7 +12,7 @@
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
     xmlns:vm="clr-namespace:AiPrompt.ViewModels.Pages"
     Title="DashboardPage"
-    d:DataContext="{d:DesignInstance local:DashboardPage,
+    d:DataContext="{d:DesignInstance local:TagsPage,
     IsDesignTimeCreatable=False}"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -216,7 +216,12 @@
                     <ui:Button Grid.Column="1" Style="{StaticResource BigButton}" Content="清空" HorizontalAlignment="Center" Command="{Binding ViewModel.NegativeClearCommand}" ></ui:Button>
                     <ui:Button Name="NegativeDefaultButton" Grid.Column="1" Style="{StaticResource BigButton}" Content="默认" HorizontalAlignment="Center" Command="{Binding ViewModel.NegativeDefaultCommand}" ></ui:Button>
 
-                    <ui:Button Grid.Column="1" Width="{Binding Source={x:Reference NegativeDefaultButton},Path=ActualWidth}" Padding="10 10" Style="{StaticResource BigButton}" Content="{Binding ViewModel.WeightMode,Converter={StaticResource WeightTextSwitchConverter},Mode=OneWay}" HorizontalAlignment="Center" Command="{Binding ViewModel.SwitchWeightModeCommand}" BorderThickness="1">
+                    <ui:Button Grid.Column="1" Padding="10 10" Style="{StaticResource BigButton}" HorizontalAlignment="Center"
+                               Width="{Binding Source={x:Reference NegativeDefaultButton},Path=ActualWidth}"
+                               Content="{Binding ViewModel.WeightMode,Converter={StaticResource WeightTextSwitchConverter},Mode=OneWay}"
+                               Command="{Binding ViewModel.SwitchWeightModeCommand}" BorderThickness="1"
+
+                               >
                     </ui:Button>
                 </UniformGrid>
             </Grid>
@@ -325,7 +330,7 @@
                                                                         VerticalAlignment="Center"
                                                                         FontSize="25"
                                                                         Style="{StaticResource ImageButtonStyle}"
-                                                                        Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:DashboardPage}},Path=ViewModel.PromptImageCommand}"
+                                                                        Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:TagsPage}},Path=ViewModel.PromptImageCommand}"
                                                                         CommandParameter="{Binding}"
                                                                         >
                                                                         <!--Background="{Binding Image,Mode=OneWay,Converter={StaticResource PathToImageBrushConverter},ConverterParameter={x:Static Stretch.UniformToFill}}"-->
