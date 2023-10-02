@@ -32,7 +32,7 @@
         <StackPanel>
             <Border Margin="20">
                 <!--设置的背景图片-->
-                <Image Name="background" Stretch="Uniform" Source="https://i.ppy.sh/dfde325eb51c2f51e39aa20137975d52fa986ef2/68747470733a2f2f6173736574732e7070792e73682f626561746d6170732f313035363633392f636f766572732f636f7665722e6a7067">
+                <Image Name="background" Stretch="Uniform" Source="/Assets/SettingsBackground.png">
                     <Image.Clip>
                         <RectangleGeometry RadiusX="20" RadiusY="20">
                             <RectangleGeometry.Rect>
