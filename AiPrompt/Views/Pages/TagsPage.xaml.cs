@@ -10,11 +10,11 @@ using System.Windows.Media;
 
 namespace AiPrompt.Views.Pages
 {
-    public partial class TagsPage : Wpf.Ui.Controls.INavigableView<DashboardViewModel>
+    public partial class TagsPage : Wpf.Ui.Controls.INavigableView<TagsViewModel>
     {
-        public DashboardViewModel ViewModel { get; }
+        public TagsViewModel ViewModel { get; }
 
-        public TagsPage(DashboardViewModel viewModel)
+        public TagsPage(TagsViewModel viewModel)
         {
             ViewModel = viewModel;
             DataContext = this;

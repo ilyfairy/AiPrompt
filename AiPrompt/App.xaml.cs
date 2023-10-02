@@ -50,10 +50,10 @@ namespace AiPrompt
                 services.AddSingleton<IContentDialogService, ContentDialogService>();
 
                 services.AddSingleton<TagsPage>();
-                services.AddSingleton<DashboardViewModel>();
+                services.AddSingleton<TagsViewModel>();
 
                 services.AddSingleton<ImagesPage>();
-                services.AddSingleton<DataViewModel>();
+                services.AddSingleton<ImagesViewModel>();
 
                 services.AddSingleton<SettingsPage>();
                 services.AddSingleton<SettingsViewModel>();

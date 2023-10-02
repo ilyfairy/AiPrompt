@@ -9,11 +9,11 @@ using Wpf.Ui.Controls;
 
 namespace AiPrompt.Views.Pages
 {
-    public partial class ImagesPage : INavigableView<DataViewModel>
+    public partial class ImagesPage : INavigableView<ImagesViewModel>
     {
-        public DataViewModel ViewModel { get; }
+        public ImagesViewModel ViewModel { get; }
 
-        public ImagesPage(DataViewModel viewModel)
+        public ImagesPage(ImagesViewModel viewModel)
         {
             ViewModel = viewModel;
             DataContext = this;

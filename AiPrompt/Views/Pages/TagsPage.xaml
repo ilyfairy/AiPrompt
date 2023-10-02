@@ -91,8 +91,8 @@
                         <BeginStoryboard>
                             <Storyboard>
                                 <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1" To="0.8" Duration="0:0:0.1" EasingFunction="{StaticResource FadeIn}" />
-                                <DoubleAnimation Storyboard.TargetProperty="Width" From="{x:Static vm:DashboardViewModel.PromptImageSize}" To="{x:Static vm:DashboardViewModel.PromptImageSizeSmall}" Duration="0:0:0.1" EasingFunction="{StaticResource FadeIn}" />
-                                <DoubleAnimation Storyboard.TargetProperty="Height" From="{x:Static vm:DashboardViewModel.PromptImageSize}" To="{x:Static vm:DashboardViewModel.PromptImageSizeSmall}" Duration="0:0:0.1" EasingFunction="{StaticResource FadeIn}" />
+                                <DoubleAnimation Storyboard.TargetProperty="Width" From="{x:Static vm:TagsViewModel.PromptImageSize}" To="{x:Static vm:TagsViewModel.PromptImageSizeSmall}" Duration="0:0:0.1" EasingFunction="{StaticResource FadeIn}" />
+                                <DoubleAnimation Storyboard.TargetProperty="Height" From="{x:Static vm:TagsViewModel.PromptImageSize}" To="{x:Static vm:TagsViewModel.PromptImageSizeSmall}" Duration="0:0:0.1" EasingFunction="{StaticResource FadeIn}" />
                             </Storyboard>
                         </BeginStoryboard>
                     </Trigger.EnterActions>
@@ -102,8 +102,8 @@
                         <BeginStoryboard>
                             <Storyboard>
                                 <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0.8" To="1" Duration="0:0:0.1" EasingFunction="{StaticResource FadeOut}" />
-                                <DoubleAnimation Storyboard.TargetProperty="Width" From="{x:Static vm:DashboardViewModel.PromptImageSizeSmall}" To="{x:Static vm:DashboardViewModel.PromptImageSize}" Duration="0:0:0.1" EasingFunction="{StaticResource FadeOut}" />
-                                <DoubleAnimation Storyboard.TargetProperty="Height" From="{x:Static vm:DashboardViewModel.PromptImageSizeSmall}" To="{x:Static vm:DashboardViewModel.PromptImageSize}" Duration="0:0:0.1" EasingFunction="{StaticResource FadeOut}" />
+                                <DoubleAnimation Storyboard.TargetProperty="Width" From="{x:Static vm:TagsViewModel.PromptImageSizeSmall}" To="{x:Static vm:TagsViewModel.PromptImageSize}" Duration="0:0:0.1" EasingFunction="{StaticResource FadeOut}" />
+                                <DoubleAnimation Storyboard.TargetProperty="Height" From="{x:Static vm:TagsViewModel.PromptImageSizeSmall}" To="{x:Static vm:TagsViewModel.PromptImageSize}" Duration="0:0:0.1" EasingFunction="{StaticResource FadeOut}" />
                             </Storyboard>
                         </BeginStoryboard>
                     </Trigger.ExitActions>
@@ -318,12 +318,12 @@
                                                                     <RowDefinition Height="auto"/>
                                                                     <RowDefinition Height="auto"/>
                                                                 </Grid.RowDefinitions>
-                                                                <Grid Grid.Row="0" Width="{x:Static vm:DashboardViewModel.PromptImageSize}" Height="{x:Static vm:DashboardViewModel.PromptImageSize}">
+                                                                <Grid Grid.Row="0" Width="{x:Static vm:TagsViewModel.PromptImageSize}" Height="{x:Static vm:TagsViewModel.PromptImageSize}">
                                                                     <ui:Button
                                                                         Name="ImageButton"
                                                                         Grid.Row="0"
-                                                                        Width="{x:Static vm:DashboardViewModel.PromptImageSize}"
-                                                                        Height="{x:Static vm:DashboardViewModel.PromptImageSize}"
+                                                                        Width="{x:Static vm:TagsViewModel.PromptImageSize}"
+                                                                        Height="{x:Static vm:TagsViewModel.PromptImageSize}"
                                                                         AllowDrop="True"
                                                                         Drop="Button_Drop"
                                                                         HorizontalAlignment="Center"
@@ -349,6 +349,7 @@
                                                                         <!--右键菜单-->
                                                                         <ui:Button.ContextMenu>
                                                                             <ContextMenu FontSize="14" Background="{Binding Source={x:Static models:GlobalResources.Instance},Path=PrimaryColor}">
+                                                                                <MenuItem Header="复制" Command="{Binding Source={x:Reference Name=CurrentControl},Path=ViewModel.CopyCurrentTagCommand}" CommandParameter="{Binding}" />
                                                                                 <MenuItem Header="重置权重" Command="{Binding Source={x:Reference Name=CurrentControl},Path=ViewModel.WeightResetCommand}" CommandParameter="{Binding}" />
                                                                                 <MenuItem Header="增加权重(+)" Command="{Binding Source={x:Reference Name=CurrentControl},Path=ViewModel.WeightIncCommand}" CommandParameter="{Binding}" />
                                                                                 <MenuItem Header="减少权重(-)" Command="{Binding Source={x:Reference Name=CurrentControl},Path=ViewModel.WeightDecCommand}" CommandParameter="{Binding}" />
@@ -363,8 +364,8 @@
                                                                 </b:Interaction.Behaviors>
                                                                 </Border>-->
 
-                                                                <Label Grid.Row="1" Width="{x:Static vm:DashboardViewModel.PromptImageSize}" Foreground="{DynamicResource TextFillColorPrimaryBrush}" HorizontalContentAlignment="Center" Content="{Binding PromptCN,Mode=OneWay}" Margin="0 4 0 0"/>
-                                                                <Label Grid.Row="2" Width="{x:Static vm:DashboardViewModel.PromptImageSize}" Foreground="{DynamicResource TextFillColorPrimaryBrush}" HorizontalContentAlignment="Center" Content="{Binding PromptEN,Mode=OneWay}"/>
+                                                                <Label Grid.Row="1" Width="{x:Static vm:TagsViewModel.PromptImageSize}" Foreground="{DynamicResource TextFillColorPrimaryBrush}" HorizontalContentAlignment="Center" Content="{Binding PromptCN,Mode=OneWay}" Margin="0 4 0 0"/>
+                                                                <Label Grid.Row="2" Width="{x:Static vm:TagsViewModel.PromptImageSize}" Foreground="{DynamicResource TextFillColorPrimaryBrush}" HorizontalContentAlignment="Center" Content="{Binding PromptEN,Mode=OneWay}"/>
 
                                                                 <Border Grid.ColumnSpan="99" Grid.RowSpan="99" Visibility="{Binding Config.IsSelected,Converter={StaticResource BooleanToVisibilityConverter}}" Margin="-10 -5" Padding="5 1" CornerRadius="5" VerticalAlignment="Bottom" HorizontalAlignment="Right" Background="{Binding Source={x:Static models:GlobalResources.Instance},Path=PrimaryColor}">
                                                                     <TextBlock Foreground="White">

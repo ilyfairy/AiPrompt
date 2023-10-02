@@ -14,7 +14,7 @@ using IO = System.IO;
 
 namespace AiPrompt.ViewModels.Pages;
 
-public partial class DataViewModel : ObservableObject, INavigationAware
+public partial class ImagesViewModel : ObservableObject, INavigationAware
 {
     public static double ImageWidth { get; } = 240;
 
@@ -27,7 +27,7 @@ public partial class DataViewModel : ObservableObject, INavigationAware
     public bool IsShow { get; set; }
     public ImageItem? Current { get; set; }
 
-    public DataViewModel(AppConfig config, GlobalResources globalResources)
+    public ImagesViewModel(AppConfig config, GlobalResources globalResources)
     {
         Config = config;
         GlobalResources = globalResources;

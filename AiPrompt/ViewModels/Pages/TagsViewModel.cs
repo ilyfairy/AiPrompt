@@ -14,10 +14,11 @@ using Wpf.Ui.Controls;
 
 namespace AiPrompt.ViewModels.Pages;
 
-public partial class DashboardViewModel : ObservableObject // , INavigationAware
+public partial class TagsViewModel : ObservableObject , INavigationAware
 {
     public static double PromptImageSize { get; } = 190;
     public static double PromptImageSizeSmall { get; } = 180;
+
 
     private bool _initialized = false;
 
@@ -39,7 +40,7 @@ public partial class DashboardViewModel : ObservableObject // , INavigationAware
    
 
     
-    public DashboardViewModel(AppConfig config, GlobalResources resources)
+    public TagsViewModel(AppConfig config, GlobalResources resources)
     {
         Config = config;
         Resources = resources;
@@ -170,7 +171,6 @@ public partial class DashboardViewModel : ObservableObject // , INavigationAware
     }
 
 
-    #region ImageClick
     [RelayCommand]
     public void OnPromptImage(PromptItem item)
     {
@@ -186,6 +186,13 @@ public partial class DashboardViewModel : ObservableObject // , INavigationAware
         }
 
         Select(item);
+    }
+
+    #region 图片右键菜单
+    [RelayCommand]
+    public void CopyCurrentTag(PromptItem item)
+    {
+        Utils.SetClipboardText(item.PromptEN);
     }
 
     [RelayCommand]

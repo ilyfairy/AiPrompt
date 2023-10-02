@@ -41,7 +41,7 @@ public class PathToImageBrushConverter : IMultiValueConverter
             stretch = Stretch.UniformToFill;
         }
 
-        int size = (int)(DashboardViewModel.PromptImageSize * Utils.GetScale().XScale);
+        int size = (int)(TagsViewModel.PromptImageSize * Utils.GetScale().XScale);
         var item = (PromptItem)values[0];
         var path = values[1]?.ToString();
         bool isRelTag = item.IsImageRelativeTag;
