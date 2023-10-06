@@ -5,6 +5,7 @@
 
 using AiPrompt.Helpers;
 using AiPrompt.Models;
+using AiPrompt.Services;
 using PropertyChanged;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -24,10 +25,12 @@ public partial class TagsViewModel : ObservableObject , INavigationAware
 
     public AppConfig Config { get; set; }
     public GlobalResources Resources { get; set; }
+    public TagsService TagsService { get; set; }
     public PromptTab? CurrentTab { get; set; }
 
     [AlsoNotifyFor(nameof(PositivePromptText), nameof(PositivePromptText))]
     public bool? WeightMode { get; set; } = false;
+
 
     [AlsoNotifyFor(nameof(PositivePromptText))]
     public ObservableCollection<PromptItem> PositivePromptItems { get; set; } = new();
@@ -37,18 +40,21 @@ public partial class TagsViewModel : ObservableObject , INavigationAware
     public ObservableCollection<PromptItem> NegativePromptItems { get; set; } = new();
     public string NegativePromptText => GetPromptText(NegativePromptItems);
 
+
+    
    
 
     
-    public TagsViewModel(AppConfig config, GlobalResources resources)
+    public TagsViewModel(AppConfig config, GlobalResources resources, TagsService tagsService)
     {
         Config = config;
         Resources = resources;
+        TagsService = tagsService;
     }
 
     public async void OnNavigatedTo()
     {
-        if (!_initialized || Resources.Tabs.Count == 0)
+        if (!_initialized || TagsService.Tabs.Count == 0)
         {
             _initialized = true;
             await LoadTab();
@@ -66,44 +72,12 @@ public partial class TagsViewModel : ObservableObject , INavigationAware
         OnPropertyChanged(nameof(NegativePromptText));
         OnPropertyChanged(nameof(PositivePromptText));
 
-        List<PromptTab> tabs = new();
-        Resources.Tabs.Clear();
-        try
-        {
-            Resources.TabFileMap.Clear();
-            foreach (var jsonFile in Directory.GetFiles(Config.TabPromptPath, "*.json"))
-            {
-                try
-                {
-                    var content = await File.ReadAllTextAsync(jsonFile);
-                    var tab = JsonSerializer.Deserialize<PromptTab>(content);
-                    if (tab == null) continue;
-                    tab.FilePath = jsonFile;
-                    tabs.Add(tab);
-                    foreach (var block in tab.Items)
-                    {
-                        block.Parent = tab;
-                        foreach (var item in block.Items)
-                        {
-                            item.Parent = block;
-                        }
-                    }
-                    Resources.TabFileMap.Add(jsonFile, tab);
-                }
-                catch (Exception)
-                {
-                }
-            }
-        }
-        catch (Exception) { }
+        await TagsService.Load();
+        // TODO: xxx
 
-        foreach (var item in tabs.OrderBy(v => v.Index))
-        {
-            Resources.Tabs.Add(item);
-        }
-        CurrentTab = tabs.FirstOrDefault();
+        CurrentTab = TagsService.Tabs.FirstOrDefault();
 
-        foreach (var tab in Resources.Tabs)
+        foreach (var tab in TagsService.Tabs)
         {
             foreach (var block in tab.Items)
             {
@@ -138,14 +112,23 @@ public partial class TagsViewModel : ObservableObject , INavigationAware
     }
 
 
-    public void Select(PromptItem item)
+    /// <summary>
+    /// 选中或取消
+    /// </summary>
+    /// <param name="item"></param>
+    /// <param name="forceOn">强制选中</param>
+    public void Select(PromptItem item, bool forceOn = false)
     {
+        //负面tag
         if (item.Parent?.Parent?.IsNegative == true)
         {
-            if (!item.Config.IsSelected)
+            if (!item.Config.IsSelected || forceOn)
             {
                 item.Config.IsSelected = true;
-                NegativePromptItems.Add(item);
+                if (!NegativePromptItems.Contains(item))
+                {
+                    NegativePromptItems.Add(item);
+                }
             }
             else
             {
@@ -154,12 +137,16 @@ public partial class TagsViewModel : ObservableObject , INavigationAware
             }
             OnPropertyChanged(nameof(NegativePromptText));
         }
+        //正面tag
         else
         {
-            if (!item.Config.IsSelected)
+            if (!item.Config.IsSelected || forceOn)
             {
                 item.Config.IsSelected = true;
-                PositivePromptItems.Add(item);
+                if (!PositivePromptItems.Contains(item))
+                {
+                    PositivePromptItems.Add(item);
+                }
             }
             else
             {
@@ -273,7 +260,19 @@ public partial class TagsViewModel : ObservableObject , INavigationAware
     [RelayCommand]
     private void OnNegativeDefault()
     {
-        
+        foreach (var tab in TagsService.Tabs)
+        {
+            foreach (var block in tab.Items)
+            {
+                foreach (var item in block.Items)
+                {
+                    if (item.IsDefault)
+                    {
+                        Select(item, true);
+                    }
+                }
+            }
+        }
     }
 
     [RelayCommand]

@@ -323,6 +323,10 @@
                                                 <TextBlock Text="放大倍数" />
                                                 <TextBox Text="{Binding ViewModel.Current.TextualData.HiresResize,Mode=OneWay}" IsReadOnly="True" />
                                             </StackPanel>
+                                            <StackPanel Orientation="Vertical" Margin="0 0 5 0">
+                                                <TextBlock Text="AVE" />
+                                                <TextBox Text="{Binding ViewModel.Current.TextualData,Mode=OneWay}" IsReadOnly="True" />
+                                            </StackPanel>
 
                                         </UniformGrid>
 

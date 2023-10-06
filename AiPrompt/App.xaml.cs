@@ -49,6 +49,7 @@ namespace AiPrompt
                 services.AddSingleton<ISnackbarService, SnackbarService>();
                 services.AddSingleton<IContentDialogService, ContentDialogService>();
 
+
                 services.AddSingleton<TagsPage>();
                 services.AddSingleton<TagsViewModel>();
 
@@ -59,6 +60,7 @@ namespace AiPrompt
                 services.AddSingleton<SettingsViewModel>();
 
                 services.AddSingleton(GlobalResources.Instance);
+                services.AddSingleton<TagsService>();
 
                 services.AddSingleton(v =>
                 {

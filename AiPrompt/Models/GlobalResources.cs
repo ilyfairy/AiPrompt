@@ -26,9 +26,6 @@ public class GlobalResources : ObservableObject
     public SolidColorBrush ThemeColor2 { get; set; } = new SolidColorBrush(Colors.White); // 稍微深色2
     public SolidColorBrush ThemeColor3 { get; set; } = new SolidColorBrush(Colors.White); // 稍微深色2
 
-    public ObservableCollection<PromptTab> Tabs { get; set; } = new();
-    public Dictionary<string, PromptTab> TabFileMap { get; set; } = new();
-
     public JsonSerializerOptions JsonOptions { get; set; } = new()
     {
         WriteIndented = true,

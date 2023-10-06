@@ -1,4 +1,5 @@
 ﻿using AiPrompt.Models;
+using AiPrompt.Services;
 using AiPrompt.ViewModels.Pages;
 using Microsoft.Xaml.Behaviors;
 using System.Drawing;
@@ -12,11 +13,14 @@ namespace AiPrompt.Views.Pages
 {
     public partial class TagsPage : Wpf.Ui.Controls.INavigableView<TagsViewModel>
     {
+        private readonly TagsService tagsService;
+
         public TagsViewModel ViewModel { get; }
 
-        public TagsPage(TagsViewModel viewModel)
+        public TagsPage(TagsViewModel viewModel, TagsService tagsService)
         {
             ViewModel = viewModel;
+            this.tagsService = tagsService;
             DataContext = this;
 
             InitializeComponent();
@@ -57,14 +61,14 @@ namespace AiPrompt.Views.Pages
                 }
                 catch { }
 
-                foreach (var kv in ViewModel.Resources.TabFileMap)
+                foreach (var (tab, filePath) in tagsService.TabFileMap)
                 {
-                    if(kv.Value == item?.Parent?.Parent)
+                    if (tab == item?.Parent?.Parent)
                     {
                         var json = JsonSerializer.Serialize(item.Parent.Parent, ViewModel.Resources.JsonOptions);
                         try
                         {
-                            await File.WriteAllTextAsync(kv.Key, json);
+                            await File.WriteAllTextAsync(filePath, json);
                         }
                         catch { }
                         break;

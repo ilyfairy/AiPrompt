@@ -1,6 +1,5 @@
 ﻿using AiPrompt.Helpers;
 using AiPrompt.Models;
-using AiPrompt.Models;
 using MetadataExtractor;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;

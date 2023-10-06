@@ -23,7 +23,7 @@ public class ImageItem
     public ImageTextualData? TextualData { get; set; }
 }
 
-public partial class ImagePrompt
+public class ImagePrompt
 {
     [JsonPropertyName("prompt")]
     public string Prompt { get; set; } = string.Empty;
@@ -83,7 +83,7 @@ public partial class ImagePrompt
     public object Sdxl { get; set; } = string.Empty;
 }
 
-public partial class ImagePromptBaseModel
+public class ImagePromptBaseModel
 {
     [JsonPropertyName("label")]
     public string Label { get; set; } = string.Empty;
@@ -107,6 +107,9 @@ public partial class ImagePromptBaseModel
     public string Hash { get; set; } = string.Empty;
 }
 
+/// <summary>
+/// 图片文件中Textual的提示词
+/// </summary>
 public class ImageTextualData
 {
     public string Prompt { get; set; } = string.Empty;
