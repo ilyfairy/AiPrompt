@@ -2,8 +2,9 @@
 using AiPrompt.Models;
 using AiPrompt.Services;
 using MetadataExtractor;
+using Microsoft.Extensions.Logging;
+using Serilog;
 using System.Collections.ObjectModel;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 using System.Text.Json;
@@ -14,7 +15,7 @@ using IO = System.IO;
 
 namespace AiPrompt.ViewModels.Pages;
 
-public partial class ImagesViewModel(AppConfigService configService, GlobalResources globalResources) : ObservableObject, INavigationAware
+public partial class ImagesViewModel(AppConfigService configService, GlobalResources globalResources, ILogger<ImagesViewModel> logger) : ObservableObject, INavigationAware
 {
     public static double ImageWidth { get; } = 240;
 
@@ -90,26 +91,23 @@ public partial class ImagesViewModel(AppConfigService configService, GlobalResou
                 return;
             }
 
-            
+
             foreach (var file in files)
             {
                 ImageItem image = new();
                 image.Path = file;
 
+                logger.LogInformation("File: {File}",file);
+
                 ImagePrompt? imagePrompt = null;
-                Console.WriteLine(file);
                 var ds = ImageMetadataReader.ReadMetadata(file);
+
                 foreach (var dire in ds)
                 {
-                    Console.WriteLine($"Name: {dire.Name}");
-                    foreach (var tag in dire.Tags)
-                    {
-                        Console.WriteLine($"TagName:{tag.Name}    Value:{tag.Description}");
-                    }
                     if (dire.Name == "PNG-tEXt")
                     {
                         var textualDataTag = dire.Tags.FirstOrDefault(v => v.Name == "Textual Data");
-                        if(textualDataTag != null && textualDataTag.Description != null)
+                        if (textualDataTag != null && textualDataTag.Description != null)
                         {
                             var data = TextualDataParse(textualDataTag.Description);
                             if (data != null)
@@ -133,10 +131,8 @@ public partial class ImagesViewModel(AppConfigService configService, GlobalResou
                             catch (Exception) { }
                         }
                     }
-                    Console.WriteLine();
                 }
-                Console.WriteLine();
-                Console.WriteLine();
+
                 image.ImagePrompt = imagePrompt;
 
                 try
@@ -174,7 +170,7 @@ public partial class ImagesViewModel(AppConfigService configService, GlobalResou
                 //Application.Current.Dispatcher.Invoke(() => Images.Add(image));
             }
 
-            Console.WriteLine($"一共{Images.Count}张图片");
+            logger.LogInformation("一共{Count}张图片", Images.Count);
         });
     }
 

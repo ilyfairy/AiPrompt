@@ -12,6 +12,8 @@ using AiPrompt.Views.Windows;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Serilog;
 using System.Windows.Media;
 using System.Windows.Threading;
 using Wpf.Ui;
@@ -59,7 +61,16 @@ public partial class App
             services.AddSingleton<TagsService>();
             services.AddSingleton<AppConfigService>();
             services.AddSingleton<SerializerService>();
-        }).Build();
+        })
+        .ConfigureLogging(logging =>
+        {
+            logging.ClearProviders();
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.Console()
+                .CreateLogger();
+            logging.AddSerilog(Log.Logger);
+        })
+        .Build();
 
     /// <summary>
     /// Gets registered service.
@@ -78,10 +89,12 @@ public partial class App
     {
         try
         {
+            //主题
             var configService = _host.Services.GetRequiredService<AppConfigService>();
             configService.LoadOrCreate();
             GlobalResources.Instance.SetThemeColor(configService.Config.Theme == Wpf.Ui.Appearance.ApplicationTheme.Light);
 
+            //字体
             var fontUri = new Uri("pack://application:,,,/Assets/font.ttf");
             var fonts = Fonts.GetFontFamilies(fontUri);
             var font = fonts.First();
