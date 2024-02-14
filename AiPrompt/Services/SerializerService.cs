@@ -10,7 +10,7 @@ namespace AiPrompt.Services;
 
 public class SerializerService
 {
-    public ConfigType ConfigType { get; set; } = ConfigType.Json;
+    public ConfigType ConfigType { get; set; } = ConfigType.Yaml;
 
     private readonly JsonSerializerOptions options = new();
 

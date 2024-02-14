@@ -50,8 +50,8 @@ public partial class ImagesViewModel(AppConfigService configService, GlobalResou
         await Task.Run(async () =>
         {
             var path = ConfigService.Config.ImagePath;
-            string[] files = Array.Empty<string>();
-            var cacheFiles = Enumerable.Empty<string>();
+            string[] files = [];
+            IEnumerable<string> cacheFiles = [];
 
             void GetFiles(string dir, int level = 3)
             {
@@ -92,8 +92,10 @@ public partial class ImagesViewModel(AppConfigService configService, GlobalResou
             }
 
 
-            foreach (var file in files)
+            foreach (var item in files)
             {
+                string file = Path.GetFullPath(item);
+
                 ImageItem image = new();
                 image.Path = file;
 
@@ -135,6 +137,7 @@ public partial class ImagesViewModel(AppConfigService configService, GlobalResou
 
                 image.ImagePrompt = imagePrompt;
 
+                //解析图片大小
                 try
                 {
                     ImageSizeReader.ImageSizeReaderUtil imageUtil = new();

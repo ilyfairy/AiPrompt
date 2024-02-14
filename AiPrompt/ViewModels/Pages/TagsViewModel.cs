@@ -8,14 +8,12 @@ using AiPrompt.Models;
 using AiPrompt.Services;
 using PropertyChanged;
 using System.Collections.ObjectModel;
-using System.IO;
-using System.Text.Json;
 using System.Windows.Input;
 using Wpf.Ui.Controls;
 
 namespace AiPrompt.ViewModels.Pages;
 
-public partial class TagsViewModel : ObservableObject , INavigationAware
+public partial class TagsViewModel(AppConfigService configService, GlobalResources resources, TagsService tagsService) : ObservableObject, INavigationAware
 {
     public static double PromptImageSize { get; } = 190;
     public static double PromptImageSizeSmall { get; } = 180;
@@ -23,9 +21,9 @@ public partial class TagsViewModel : ObservableObject , INavigationAware
 
     private bool _initialized = false;
 
-    public AppConfigService ConfigService { get; set; }
-    public GlobalResources Resources { get; set; }
-    public TagsService TagsService { get; set; }
+    public AppConfigService ConfigService { get; set; } = configService;
+    public GlobalResources Resources { get; set; } = resources;
+    public TagsService TagsService { get; set; } = tagsService;
     public PromptTab? CurrentTab { get; set; }
 
     [AlsoNotifyFor(nameof(PositivePromptText), nameof(PositivePromptText))]
@@ -39,18 +37,6 @@ public partial class TagsViewModel : ObservableObject , INavigationAware
     [AlsoNotifyFor(nameof(NegativePromptText))]
     public ObservableCollection<PromptItem> NegativePromptItems { get; set; } = new();
     public string NegativePromptText => GetPromptText(NegativePromptItems);
-
-
-    
-   
-
-    
-    public TagsViewModel(AppConfigService configService, GlobalResources resources, TagsService tagsService)
-    {
-        ConfigService = configService;
-        Resources = resources;
-        TagsService = tagsService;
-    }
 
     public async void OnNavigatedTo()
     {
