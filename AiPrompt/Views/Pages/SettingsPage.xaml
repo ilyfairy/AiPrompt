@@ -63,26 +63,26 @@
                     CommandParameter="theme_light"
                     Content="Light"
                     GroupName="themeSelect"
-                    IsChecked="{Binding ViewModel.Config.Theme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Light, Mode=OneWay}" />
+                    IsChecked="{Binding ViewModel.ConfigService.Config.Theme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Light, Mode=OneWay}" />
                 <RadioButton
                     Margin="-32 0 0 0"
                     Command="{Binding ViewModel.ChangeThemeCommand, Mode=OneWay}"
                     CommandParameter="theme_dark"
                     Content="Dark"
                     GroupName="themeSelect"
-                    IsChecked="{Binding ViewModel.Config.Theme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Dark, Mode=OneWay}" />
+                    IsChecked="{Binding ViewModel.ConfigService.Config.Theme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Dark, Mode=OneWay}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" Margin="0 12 0 0">
                 <TextBlock FontSize="18" Text="提示词文件夹:" VerticalAlignment="Center" Margin="0 0 12 0" MinWidth="180"/>
-                <TextBox Width="500" Text="{Binding ViewModel.Config.TabPromptPath}" />
+                <TextBox Width="500" Text="{Binding ViewModel.ConfigService.Config.TabPromptPath}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" Margin="0 12 0 0">
                 <TextBlock FontSize="18" Text="图片拖拽保存文件夹:" VerticalAlignment="Center" Margin="0 0 12 0" MinWidth="180"/>
-                <TextBox Width="500" Text="{Binding ViewModel.Config.ImageDropPath}" />
+                <TextBox Width="500" Text="{Binding ViewModel.ConfigService.Config.ImageDropPath}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" Margin="0 12 0 0">
                 <TextBlock FontSize="18" Text="图片文件夹:" VerticalAlignment="Center" Margin="0 0 12 0" MinWidth="180"/>
-                <TextBox Width="500" Text="{Binding ViewModel.Config.ImagePath}" />
+                <TextBox Width="500" Text="{Binding ViewModel.ConfigService.Config.ImagePath}" />
             </StackPanel>
         </StackPanel>
 

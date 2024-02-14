@@ -4,62 +4,53 @@
 // All Rights Reserved.
 
 using AiPrompt.Models;
+using AiPrompt.Services;
 using AiPrompt.Views.Windows;
 using System.Reflection;
-using System.Windows.Media;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
 
-namespace AiPrompt.ViewModels.Pages
+namespace AiPrompt.ViewModels.Pages;
+
+public partial class SettingsViewModel(AppConfigService appConfigService, GlobalResources globalResources) : ObservableObject, INavigationAware
 {
-    public partial class SettingsViewModel : ObservableObject, INavigationAware
+    public string AppVersion { get; } = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? string.Empty;
+    public GlobalResources GlobalResources { get; private set; } = globalResources;
+
+    [ObservableProperty]
+    private AppConfigService configService = appConfigService;
+
+    public void OnNavigatedTo()
     {
-        public string AppVersion { get; } = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? string.Empty;
-        public GlobalResources GlobalResources { get; private set; }
+    }
 
-        [ObservableProperty]
-        private AppConfig config;
+    public void OnNavigatedFrom()
+    {
+        ConfigService.Save();
+    }
 
-        public SettingsViewModel(AppConfig config, GlobalResources globalResources)
+
+    [RelayCommand]
+    private void OnChangeTheme(string parameter)
+    {
+        switch (parameter)
         {
-            this.config = config;
-            GlobalResources = globalResources;
-        }
-
-
-        public void OnNavigatedTo()
-        {
-
-        }
-
-        public void OnNavigatedFrom()
-        {
-            Config.Save();
-        }
-
-
-        [RelayCommand]
-        private void OnChangeTheme(string parameter)
-        {
-            switch (parameter)
-            {
-                case "theme_light":
-                    if (Config.Theme == ThemeType.Light)
-                        break;
-
-                    Theme.Apply(ThemeType.Light);
-                    Config.Theme = ThemeType.Light;
+            case "theme_light":
+                if (ConfigService.Config.Theme == ApplicationTheme.Light)
                     break;
 
-                default:
-                    if (Config.Theme == ThemeType.Dark)
-                        break;
+                ApplicationThemeManager.Apply(ApplicationTheme.Light);
+                ConfigService.Config.Theme = ApplicationTheme.Light;
+                break;
 
-                    Theme.Apply(ThemeType.Dark);
-                    Config.Theme = ThemeType.Dark;
+            default:
+                if (ConfigService.Config.Theme == ApplicationTheme.Dark)
                     break;
-            }
-            (Application.Current.MainWindow as MainWindow)?.RefreshTitleColor();
+
+                ApplicationThemeManager.Apply(ApplicationTheme.Dark);
+                ConfigService.Config.Theme = ApplicationTheme.Dark;
+                break;
         }
+        (Application.Current.MainWindow as MainWindow)?.RefreshTitleColor();
     }
 }

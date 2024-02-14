@@ -4,8 +4,8 @@
 // All Rights Reserved.
 
 using AiPrompt.Models;
+using AiPrompt.Services;
 using System.Collections.ObjectModel;
-using Wpf.Ui.Common;
 using Wpf.Ui.Controls;
 
 namespace AiPrompt.ViewModels.Windows
@@ -13,7 +13,7 @@ namespace AiPrompt.ViewModels.Windows
     public partial class MainWindowViewModel : ObservableObject
     {
         [ObservableProperty]
-        private AppConfig config;
+        private AppConfigService configService;
 
         public string ApplicationTitle { get; set; } = "Ai Prompt";
 
@@ -43,9 +43,9 @@ namespace AiPrompt.ViewModels.Windows
             }
         };
 
-        public MainWindowViewModel(AppConfig config)
+        public MainWindowViewModel(AppConfigService configService)
         {
-            this.config = config;
+            this.configService = configService;
         }
 
         //public ObservableCollection<MenuItem> TrayMenuItems { get; set; } = new()

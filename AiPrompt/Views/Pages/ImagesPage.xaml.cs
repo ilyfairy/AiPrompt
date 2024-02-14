@@ -4,21 +4,19 @@
 // All Rights Reserved.
 
 using AiPrompt.ViewModels.Pages;
-using System.Windows.Controls;
 using Wpf.Ui.Controls;
 
-namespace AiPrompt.Views.Pages
+namespace AiPrompt.Views.Pages;
+
+public partial class ImagesPage : INavigableView<ImagesViewModel>
 {
-    public partial class ImagesPage : INavigableView<ImagesViewModel>
+    public ImagesViewModel ViewModel { get; }
+
+    public ImagesPage(ImagesViewModel viewModel)
     {
-        public ImagesViewModel ViewModel { get; }
-
-        public ImagesPage(ImagesViewModel viewModel)
-        {
-            ViewModel = viewModel;
-            DataContext = this;
-            InitializeComponent();
-        }
-
+        ViewModel = viewModel;
+        DataContext = this;
+        InitializeComponent();
     }
+
 }

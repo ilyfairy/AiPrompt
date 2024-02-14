@@ -240,7 +240,7 @@
                 </Border>
 
                 <ScrollViewer Grid.Column="1">
-                    <Border Background="Transparent">
+                    <Border Background="Transparent" Padding="0 0 15 0">
                         <Grid>
                             <Button Content="X" HorizontalAlignment="Right" VerticalAlignment="Top" Command="{Binding ViewModel.CloseImageCommand}"/>
                             <StackPanel Orientation="Vertical">
@@ -252,16 +252,21 @@
                                         </Style>
                                     </Border.Resources>
                                     <StackPanel Orientation="Vertical">
-                                        <UniformGrid Columns="2" Margin="0 0 0 10">
+                                        <UniformGrid Columns="2" Margin="0 0 0 0">
                                             <StackPanel Orientation="Vertical" Margin="0 0 5 0">
                                                 <TextBlock Text="模型" />
                                                 <TextBox Text="{Binding ViewModel.Current.TextualData.Model,Mode=OneWay}" IsReadOnly="True" />
                                             </StackPanel>
-                                            <StackPanel Orientation="Vertical" Margin="0 0 5 0">
+                                            <StackPanel Orientation="Vertical" Margin="0 0 0 0">
                                                 <TextBlock Text="Clip Skip" />
                                                 <TextBox Text="{Binding ViewModel.Current.TextualData.ClipSkip,Mode=OneWay}" IsReadOnly="True" />
                                             </StackPanel>
                                         </UniformGrid>
+
+                                        <StackPanel Orientation="Vertical" Margin="0 0 0 10">
+                                            <TextBlock Text="AVE" />
+                                            <TextBox Text="{Binding ViewModel.Current.TextualData.Model,Mode=OneWay}" IsReadOnly="True" />
+                                        </StackPanel>
 
                                         <TextBlock Text="正面提示词" Margin="0 0 0 5"/>
                                         <TextBox MinLines="5" MaxLines="5" IsReadOnly="True" TextWrapping="Wrap" Text="{Binding ViewModel.Current.TextualData.Prompt,Mode=OneWay}" />
@@ -323,16 +328,8 @@
                                                 <TextBlock Text="放大倍数" />
                                                 <TextBox Text="{Binding ViewModel.Current.TextualData.HiresResize,Mode=OneWay}" IsReadOnly="True" />
                                             </StackPanel>
-                                            <StackPanel Orientation="Vertical" Margin="0 0 5 0">
-                                                <TextBlock Text="AVE" />
-                                                <TextBox Text="{Binding ViewModel.Current.TextualData,Mode=OneWay}" IsReadOnly="True" />
-                                            </StackPanel>
 
                                         </UniformGrid>
-
-
-
-
 
 
 

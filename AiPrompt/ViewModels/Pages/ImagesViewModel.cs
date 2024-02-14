@@ -1,5 +1,6 @@
 ﻿using AiPrompt.Helpers;
 using AiPrompt.Models;
+using AiPrompt.Services;
 using MetadataExtractor;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
@@ -13,24 +14,18 @@ using IO = System.IO;
 
 namespace AiPrompt.ViewModels.Pages;
 
-public partial class ImagesViewModel : ObservableObject, INavigationAware
+public partial class ImagesViewModel(AppConfigService configService, GlobalResources globalResources) : ObservableObject, INavigationAware
 {
     public static double ImageWidth { get; } = 240;
 
     private string? pathCache = null;
 
     public ObservableCollection<ImageItem> Images { get; set; } = new();
-    public AppConfig Config { get; private set; }
-    public GlobalResources GlobalResources { get; private set; }
+    public AppConfigService ConfigService { get; private set; } = configService;
+    public GlobalResources GlobalResources { get; private set; } = globalResources;
 
     public bool IsShow { get; set; }
     public ImageItem? Current { get; set; }
-
-    public ImagesViewModel(AppConfig config, GlobalResources globalResources)
-    {
-        Config = config;
-        GlobalResources = globalResources;
-    }
 
     public async void OnNavigatedTo()
     {
@@ -41,19 +36,19 @@ public partial class ImagesViewModel : ObservableObject, INavigationAware
 
     private async Task InitializeViewModel()
     {
-        if (pathCache == Config.ImagePath)
+        if (pathCache == ConfigService.Config.ImagePath)
         {
             return;
         }
         Images.Clear();
-        pathCache = Config.ImagePath;
+        pathCache = ConfigService.Config.ImagePath;
 
         var scale = Utils.GetScale();
         BindingOperations.EnableCollectionSynchronization(Images, Images);
 
         await Task.Run(async () =>
         {
-            var path = Config.ImagePath;
+            var path = ConfigService.Config.ImagePath;
             string[] files = Array.Empty<string>();
             var cacheFiles = Enumerable.Empty<string>();
 

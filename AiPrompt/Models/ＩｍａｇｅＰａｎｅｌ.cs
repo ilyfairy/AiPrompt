@@ -12,14 +12,30 @@ namespace AiPrompt.Models;
 public class ImageItem
 {
     public int Width { get; set; }
+
     public int Height { get; set; }
+
     public double ZoomWidth { get; set; }
+
     public double ZoomHeight { get; set; }
+
     public int DecodeWidth { get; set; }
+
     public int RenderWidth { get; set; }
 
     public string Path { get; set; } = string.Empty;
+
+    public void OnPathChanged(string oldValue, string newValue)
+    {
+
+    }
+    public void OnPathChanged(string newValue)
+    {
+
+    }
+
     public ImagePrompt? ImagePrompt { get; set; }
+
     public ImageTextualData? TextualData { get; set; }
 }
 

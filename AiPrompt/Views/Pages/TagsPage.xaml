@@ -350,7 +350,8 @@
 
                                                                         <!--右键菜单-->
                                                                         <ui:Button.ContextMenu>
-                                                                            <ContextMenu FontSize="14" Background="{Binding Source={x:Static models:GlobalResources.Instance},Path=PrimaryColor}">
+                                                                            <!--<ContextMenu FontSize="14" Background="{Binding Source={x:Static models:GlobalResources.Instance},Path=PrimaryColor}">-->
+                                                                            <ContextMenu FontSize="14">
                                                                                 <MenuItem Header="复制" Command="{Binding Source={StaticResource this},Path=Value.ViewModel.CopyCurrentTagCommand}" CommandParameter="{Binding}" />
                                                                                 <MenuItem Header="重置权重" Command="{Binding Source={StaticResource this},Path=Value.ViewModel.WeightResetCommand}" CommandParameter="{Binding}" />
                                                                                 <MenuItem Header="增加权重(+)" Command="{Binding Source={StaticResource this},Path=Value.ViewModel.WeightIncCommand}" CommandParameter="{Binding}" />

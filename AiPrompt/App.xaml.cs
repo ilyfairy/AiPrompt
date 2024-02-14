@@ -12,128 +12,120 @@ using AiPrompt.Views.Windows;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.IO;
-using System.Reflection;
-using System.Text.Json;
 using System.Windows.Media;
 using System.Windows.Threading;
+using Wpf.Ui;
 
-namespace AiPrompt
+namespace AiPrompt;
+
+/// <summary>
+/// Interaction logic for App.xaml
+/// </summary>
+public partial class App
 {
+    // The.NET Generic Host provides dependency injection, configuration, logging, and other services.
+    // https://docs.microsoft.com/dotnet/core/extensions/generic-host
+    // https://docs.microsoft.com/dotnet/core/extensions/dependency-injection
+    // https://docs.microsoft.com/dotnet/core/extensions/configuration
+    // https://docs.microsoft.com/dotnet/core/extensions/logging
+
+    private static readonly IHost _host = Host
+        .CreateDefaultBuilder()
+        .ConfigureAppConfiguration(c => 
+        {
+            string dir = AppContext.BaseDirectory;
+            c.SetBasePath(dir);
+        })
+        .ConfigureServices((context, services) =>
+        {
+            services.AddHostedService<ApplicationHostService>();
+
+            services.AddSingleton<MainWindow>();
+            services.AddSingleton<MainWindowViewModel>();
+            services.AddSingleton<INavigationService, NavigationService>();
+            services.AddSingleton<ISnackbarService, SnackbarService>();
+            services.AddSingleton<IContentDialogService, ContentDialogService>();
+
+            services.AddSingleton<TagsPage>();
+            services.AddSingleton<TagsViewModel>();
+
+            services.AddSingleton<ImagesPage>();
+            services.AddSingleton<ImagesViewModel>();
+
+            services.AddSingleton<SettingsPage>();
+            services.AddSingleton<SettingsViewModel>();
+
+            services.AddSingleton(GlobalResources.Instance);
+            services.AddSingleton<TagsService>();
+            services.AddSingleton<AppConfigService>();
+            services.AddSingleton<SerializerService>();
+        }).Build();
+
     /// <summary>
-    /// Interaction logic for App.xaml
+    /// Gets registered service.
     /// </summary>
-    public partial class App
+    /// <typeparam name="T">Type of the service to get.</typeparam>
+    /// <returns>Instance of the service or <see langword="null"/>.</returns>
+    public static T? GetService<T>() where T : class
     {
-        // The.NET Generic Host provides dependency injection, configuration, logging, and other services.
-        // https://docs.microsoft.com/dotnet/core/extensions/generic-host
-        // https://docs.microsoft.com/dotnet/core/extensions/dependency-injection
-        // https://docs.microsoft.com/dotnet/core/extensions/configuration
-        // https://docs.microsoft.com/dotnet/core/extensions/logging
+        return _host.Services.GetService(typeof(T)) as T;
+    }
 
-        private static readonly IHost _host = Host
-            .CreateDefaultBuilder()
-            .ConfigureAppConfiguration(c => 
-            {
-                string dir = AppContext.BaseDirectory;
-                Console.WriteLine($"BasePath: {dir}");
-                c.SetBasePath(dir);
-            })
-            .ConfigureServices((context, services) =>
-            {
-                services.AddHostedService<ApplicationHostService>();
-
-                services.AddSingleton<MainWindow>();
-                services.AddSingleton<MainWindowViewModel>();
-                services.AddSingleton<INavigationService, NavigationService>();
-                services.AddSingleton<ISnackbarService, SnackbarService>();
-                services.AddSingleton<IContentDialogService, ContentDialogService>();
-
-
-                services.AddSingleton<TagsPage>();
-                services.AddSingleton<TagsViewModel>();
-
-                services.AddSingleton<ImagesPage>();
-                services.AddSingleton<ImagesViewModel>();
-
-                services.AddSingleton<SettingsPage>();
-                services.AddSingleton<SettingsViewModel>();
-
-                services.AddSingleton(GlobalResources.Instance);
-                services.AddSingleton<TagsService>();
-
-                services.AddSingleton(v =>
-                {
-                    Console.WriteLine("AddConfig...");
-                    var config = AppConfig.LoadOrCreate();
-                    GlobalResources.Instance.SetThemeColor(config.Theme == Wpf.Ui.Appearance.ThemeType.Light);
-                    
-                    return config;
-                });
-            }).Build();
-
-        /// <summary>
-        /// Gets registered service.
-        /// </summary>
-        /// <typeparam name="T">Type of the service to get.</typeparam>
-        /// <returns>Instance of the service or <see langword="null"/>.</returns>
-        public static T? GetService<T>() where T : class
+    /// <summary>
+    /// Occurs when the application is loading.
+    /// </summary>
+    private void OnStartup(object sender, StartupEventArgs e)
+    {
+        try
         {
-            return _host.Services.GetService(typeof(T)) as T;
-        }
+            var configService = _host.Services.GetRequiredService<AppConfigService>();
+            configService.LoadOrCreate();
+            GlobalResources.Instance.SetThemeColor(configService.Config.Theme == Wpf.Ui.Appearance.ApplicationTheme.Light);
 
-        /// <summary>
-        /// Occurs when the application is loading.
-        /// </summary>
-        private void OnStartup(object sender, StartupEventArgs e)
-        {
-            try
+            var fontUri = new Uri("pack://application:,,,/Assets/font.ttf");
+            var fonts = Fonts.GetFontFamilies(fontUri);
+            var font = fonts.First();
+
+            Current.Resources["GlobalFont"] = font;
+
+            foreach (var item in Current.Resources.MergedDictionaries)
             {
-                var fontUri = new Uri("pack://application:,,,/Assets/font.ttf");
-                var fonts = Fonts.GetFontFamilies(fontUri);
-                var font = fonts.First();
-
-                Current.Resources["GlobalFont"] = font;
-
-                foreach (var item in Current.Resources.MergedDictionaries)
+                if (item.Source.ToString() == "pack://application:,,,/Wpf.Ui;component/Styles/Wpf.Ui.xaml")
                 {
-                    if (item.Source.ToString() == "pack://application:,,,/Wpf.Ui;component/Styles/Wpf.Ui.xaml")
+                    foreach (var xaml in item.MergedDictionaries)
                     {
-                        foreach (var xaml in item.MergedDictionaries)
+                        if (xaml.Source.ToString() == "pack://application:,,,/Wpf.Ui;component/Styles/Assets/Fonts.xaml")
                         {
-                            if (xaml.Source.ToString() == "pack://application:,,,/Wpf.Ui;component/Styles/Assets/Fonts.xaml")
-                            {
-                                xaml["ContentControlThemeFontFamily"] = font;
-                            }
+                            xaml["ContentControlThemeFontFamily"] = font;
                         }
                     }
                 }
             }
-            catch (Exception)
-            {
-            }
-
-
-            _host.Start();
         }
-
-        /// <summary>
-        /// Occurs when the application is closing.
-        /// </summary>
-        private async void OnExit(object sender, ExitEventArgs e)
+        catch (Exception)
         {
-            var config = _host.Services.GetService<AppConfig>();
-            config?.Save();
-            await _host.StopAsync();
-            _host.Dispose();
         }
 
-        /// <summary>
-        /// Occurs when an exception is thrown by an application but not handled.
-        /// </summary>
-        private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
-        {
-            // For more info see https://docs.microsoft.com/en-us/dotnet/api/system.windows.application.dispatcherunhandledexception?view=windowsdesktop-6.0
-        }
+
+        _host.Start();
+    }
+
+    /// <summary>
+    /// Occurs when the application is closing.
+    /// </summary>
+    private async void OnExit(object sender, ExitEventArgs e)
+    {
+        var config = _host.Services.GetService<AppConfigService>();
+        config?.Save();
+        await _host.StopAsync();
+        _host.Dispose();
+    }
+
+    /// <summary>
+    /// Occurs when an exception is thrown by an application but not handled.
+    /// </summary>
+    private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+    {
+        // For more info see https://docs.microsoft.com/en-us/dotnet/api/system.windows.application.dispatcherunhandledexception?view=windowsdesktop-6.0
     }
 }

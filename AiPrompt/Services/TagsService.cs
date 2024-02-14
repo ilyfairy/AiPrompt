@@ -10,18 +10,13 @@ using System.Threading.Tasks;
 
 namespace AiPrompt.Services;
 
-public partial class TagsService : ObservableObject
+public partial class TagsService(AppConfigService configService, SerializerService serializerService) : ObservableObject
 {
     private bool _isLoaded;
-    private readonly AppConfig config;
+    private readonly AppConfigService configService = configService;
 
     public ObservableCollection<PromptTab> Tabs { get; set; } = new();
     public Dictionary<PromptTab, string> TabFileMap { get; set; } = new();
-
-    public TagsService(AppConfig config)
-    {
-        this.config = config;
-    }
 
     public async Task Load()
     {
@@ -30,13 +25,14 @@ public partial class TagsService : ObservableObject
         try
         {
             TabFileMap.Clear();
-            foreach (var jsonFilePath in Directory.GetFiles(config.TabPromptPath, "*.json"))
+            foreach (var jsonFilePath in Directory.GetFiles(configService.Config.TabPromptPath, serializerService.SearchPattern))
             {
                 try
                 {
                     var content = await File.ReadAllTextAsync(jsonFilePath);
-                    var tab = JsonSerializer.Deserialize<PromptTab>(content);
+                    PromptTab? tab = serializerService.Deserialize<PromptTab>(content);
                     if (tab == null) continue;
+
                     tab.FilePath = jsonFilePath;
                     tabs.Add(tab);
                     foreach (var block in tab.Items)

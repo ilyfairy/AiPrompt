@@ -23,7 +23,7 @@ public partial class TagsViewModel : ObservableObject , INavigationAware
 
     private bool _initialized = false;
 
-    public AppConfig Config { get; set; }
+    public AppConfigService ConfigService { get; set; }
     public GlobalResources Resources { get; set; }
     public TagsService TagsService { get; set; }
     public PromptTab? CurrentTab { get; set; }
@@ -45,9 +45,9 @@ public partial class TagsViewModel : ObservableObject , INavigationAware
    
 
     
-    public TagsViewModel(AppConfig config, GlobalResources resources, TagsService tagsService)
+    public TagsViewModel(AppConfigService configService, GlobalResources resources, TagsService tagsService)
     {
-        Config = config;
+        ConfigService = configService;
         Resources = resources;
         TagsService = tagsService;
     }

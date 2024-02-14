@@ -34,14 +34,14 @@ public class GlobalResources : ObservableObject
 
     public GlobalResources()
     {
-        Theme.Changed += Theme_Changed;
+        ApplicationThemeManager.Changed += Theme_Changed;
         PrimaryColor = new SolidColorBrush(Colors.White);
     }
 
-    private void Theme_Changed(ThemeType currentTheme, Color systemAccent)
+    private void Theme_Changed(ApplicationTheme currentTheme, Color systemAccent)
     {
-        SetThemeColor(currentTheme == ThemeType.Light);
-        PrimaryColor = new SolidColorBrush(Accent.PrimaryAccent);
+        SetThemeColor(currentTheme == ApplicationTheme.Light);
+        PrimaryColor = new SolidColorBrush(ApplicationAccentColorManager.PrimaryAccent);
     }
 
     public void SetThemeColor(bool isLight)
