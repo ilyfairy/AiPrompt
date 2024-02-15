@@ -11,6 +11,7 @@
     xmlns:handy="https://handyorg.github.io/handycontrol"
     xmlns:vm="clr-namespace:AiPrompt.ViewModels.Pages"
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:service="clr-namespace:AiPrompt.Services"
     Title="ImagesPage"
     d:DataContext="{d:DesignInstance local:ImagesPage,IsDesignTimeCreatable=False}"
     d:DesignHeight="450"
@@ -133,7 +134,7 @@
             >
             <ui:VirtualizingItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <handy:WaterfallPanel Orientation="Horizontal" AutoGroup="True" DesiredLength="{x:Static vm:ImagesViewModel.ImageWidth}" />
+                    <handy:WaterfallPanel Orientation="Horizontal" AutoGroup="True" DesiredLength="{x:Static service:TagsService.ImageWidth}" />
                 </ItemsPanelTemplate>
             </ui:VirtualizingItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
@@ -146,7 +147,7 @@
                         </Border.Resources>
 
                         <Grid Background="Transparent" Margin="0" Width="{Binding ZoomWidth,Mode=OneWay}" Height="{Binding ZoomHeight,Mode=OneWay}">
-                            <Image Width="{x:Static vm:ImagesViewModel.ImageWidth}">
+                            <Image Width="{x:Static service:TagsService.ImageWidth}">
                                 <Image.Source>
                                     <BitmapImage DecodePixelWidth="{Binding RenderWidth,Mode=OneWay}" UriSource="{Binding Path,Mode=OneWay}" />
                                 </Image.Source>
@@ -255,56 +256,57 @@
                                         <UniformGrid Columns="2" Margin="0 0 0 0">
                                             <StackPanel Orientation="Vertical" Margin="0 0 5 0">
                                                 <TextBlock Text="模型" />
-                                                <TextBox Text="{Binding ViewModel.Current.TextualData.Model,Mode=OneWay}" IsReadOnly="True" />
+                                                <TextBox Text="{Binding ViewModel.Current.Model,Mode=OneWay}" IsReadOnly="True" />
                                             </StackPanel>
                                             <StackPanel Orientation="Vertical" Margin="0 0 0 0">
                                                 <TextBlock Text="Clip Skip" />
-                                                <TextBox Text="{Binding ViewModel.Current.TextualData.ClipSkip,Mode=OneWay}" IsReadOnly="True" />
+                                                <TextBox Text="{Binding ViewModel.Current.ClipSkip,Mode=OneWay}" IsReadOnly="True" />
                                             </StackPanel>
                                         </UniformGrid>
 
                                         <StackPanel Orientation="Vertical" Margin="0 0 0 10">
                                             <TextBlock Text="AVE" />
-                                            <TextBox Text="{Binding ViewModel.Current.TextualData.Model,Mode=OneWay}" IsReadOnly="True" />
+                                            <TextBox Text="{Binding ViewModel.Current.Vae,Mode=OneWay,Converter={helpers:IsNullOrWhiteSpaceToStringConverter},ConverterParameter='None'}" IsReadOnly="True" />
                                         </StackPanel>
 
                                         <TextBlock Text="正面提示词" Margin="0 0 0 5"/>
-                                        <TextBox MinLines="5" MaxLines="5" IsReadOnly="True" TextWrapping="Wrap" Text="{Binding ViewModel.Current.TextualData.Prompt,Mode=OneWay}" />
+                                        <TextBox MinLines="5" MaxLines="5" IsReadOnly="True" TextWrapping="Wrap" TextAlignment="Left" Text="{Binding ViewModel.Current.Prompt,Mode=OneWay,Converter={helpers:SplitSpaceConverter}}" />
 
                                         <TextBlock Text="负面提示词"/>
-                                        <TextBox MinLines="5" MaxLines="5" IsReadOnly="True" TextWrapping="Wrap" Text="{Binding ViewModel.Current.TextualData.NegativePrompt,Mode=OneWay}" />
+                                        <ui:TextBox MinLines="5" MaxLines="5" IsReadOnly="True" TextWrapping="Wrap" TextAlignment="Left" Text="{Binding ViewModel.Current.NegativePrompt,Mode=OneWay,Converter={helpers:SplitSpaceConverter}}" />
 
                                         <UniformGrid Columns="2">
 
                                             <StackPanel Orientation="Vertical" Margin="0 0 5 0">
                                                 <TextBlock Text="尺寸" />
-                                                <TextBox IsReadOnly="True" Text="{Binding ViewModel.Current.TextualData.Size}">
-                                                    <!--<TextBox.Text>
-                                                    <MultiBinding Converter="{StaticResource StringConcatConverter}">
-                                                    <Binding Path="ViewModel.Current.ImagePrompt.Width"/>
-                                                    <Binding Path="." Source="x"/>
-                                                    <Binding Path="ViewModel.Current.ImagePrompt.Height"/>
-                                                    </MultiBinding>
-                                                    </TextBox.Text>-->
+                                                <TextBox IsReadOnly="True">
+                                                    <!--Text="{Binding ViewModel.Current.TextualData.Size}"-->
+                                                    <TextBox.Text>
+                                                        <MultiBinding Converter="{StaticResource StringConcatConverter}">
+                                                            <Binding Path="ViewModel.Current.Width"/>
+                                                            <Binding Path="." Source="x"/>
+                                                            <Binding Path="ViewModel.Current.Height"/>
+                                                        </MultiBinding>
+                                                    </TextBox.Text>
                                                 </TextBox>
                                             </StackPanel>
                                             <StackPanel Orientation="Vertical" Margin="5 0 0 0">
                                                 <TextBlock Text="采样算法" />
-                                                <TextBox Text="{Binding ViewModel.Current.TextualData.Sampler,Mode=OneWay}" IsReadOnly="True" />
+                                                <TextBox Text="{Binding ViewModel.Current.Sampler,Mode=OneWay}" IsReadOnly="True" />
                                             </StackPanel>
 
                                             <StackPanel Orientation="Vertical" Margin="0 0 5 0">
                                                 <TextBlock Text="迭代步数(Setps)" />
-                                                <TextBox Text="{Binding ViewModel.Current.TextualData.Setps,Mode=OneWay}" IsReadOnly="True" />
+                                                <TextBox Text="{Binding ViewModel.Current.Setps,Mode=OneWay}" IsReadOnly="True" />
                                             </StackPanel>
                                             <StackPanel Orientation="Vertical" Margin="5 0 0 0">
                                                 <TextBlock Text="提示词相关性(CFG Scale)" />
-                                                <TextBox Text="{Binding ViewModel.Current.TextualData.CfgScale,Mode=OneWay}" IsReadOnly="True" />
+                                                <TextBox Text="{Binding ViewModel.Current.CfgScale,Mode=OneWay}" IsReadOnly="True" />
                                             </StackPanel>
 
                                             <StackPanel Orientation="Vertical" Margin="0 0 5 0">
                                                 <TextBlock Text="随机种子" />
-                                                <TextBox Text="{Binding ViewModel.Current.TextualData.Seed,Mode=OneWay}" IsReadOnly="True" />
+                                                <TextBox Text="{Binding ViewModel.Current.Seed,Mode=OneWay}" IsReadOnly="True" />
                                             </StackPanel>
 
                                         </UniformGrid>
@@ -313,20 +315,20 @@
 
                                             <StackPanel Orientation="Vertical" Margin="0 0 5 0">
                                                 <TextBlock Text="修复方式" />
-                                                <TextBox Text="{Binding ViewModel.Current.TextualData.HiresUpscaler,Mode=OneWay}" IsReadOnly="True" />
+                                                <TextBox Text="{Binding ViewModel.Current.HiresUpscaler,Mode=OneWay}" IsReadOnly="True" />
                                             </StackPanel>
                                             <StackPanel Orientation="Vertical" Margin="5 0 0 0">
                                                 <TextBlock Text="高分辨率步数" />
-                                                <TextBox Text="{Binding ViewModel.Current.TextualData.HiresSteps,Mode=OneWay}" IsReadOnly="True" />
+                                                <TextBox Text="{Binding ViewModel.Current.HiresSteps,Mode=OneWay}" IsReadOnly="True" />
                                             </StackPanel>
 
                                             <StackPanel Orientation="Vertical" Margin="0 0 5 0">
                                                 <TextBlock Text="重绘幅度" />
-                                                <TextBox Text="{Binding ViewModel.Current.TextualData.DenoisingStrength,Mode=OneWay}" IsReadOnly="True" />
+                                                <TextBox Text="{Binding ViewModel.Current.DenoisingStrength,Mode=OneWay}" IsReadOnly="True" />
                                             </StackPanel>
                                             <StackPanel Orientation="Vertical" Margin="5 0 0 0">
                                                 <TextBlock Text="放大倍数" />
-                                                <TextBox Text="{Binding ViewModel.Current.TextualData.HiresResize,Mode=OneWay}" IsReadOnly="True" />
+                                                <TextBox Text="{Binding ViewModel.Current.HiresResize,Mode=OneWay}" IsReadOnly="True" />
                                             </StackPanel>
 
                                         </UniformGrid>
@@ -336,28 +338,28 @@
 
 
 
-                                        <StackPanel Visibility="Hidden" Margin="0 10 0 0" Orientation="Horizontal">
-                                            <Border Width="50" Height="50" BorderThickness="1" BorderBrush="Black">
-                                                <Border.Background>
-                                                    <SolidColorBrush Color="{DynamicResource SystemAccentColor}"/>
-                                                </Border.Background>
-                                            </Border>
-                                            <Border Width="50" Height="50" BorderThickness="1" BorderBrush="Black">
-                                                <Border.Background>
-                                                    <SolidColorBrush Color="{DynamicResource SystemAccentColorPrimary}"/>
-                                                </Border.Background>
-                                            </Border>
-                                            <Border Width="50" Height="50" BorderThickness="1" BorderBrush="Black">
-                                                <Border.Background>
-                                                    <SolidColorBrush Color="{DynamicResource SystemAccentColorSecondary}"/>
-                                                </Border.Background>
-                                            </Border>
-                                            <Border Width="50" Height="50" BorderThickness="1" BorderBrush="Black">
-                                                <Border.Background>
-                                                    <SolidColorBrush Color="{DynamicResource SystemAccentColorTertiary}"/>
-                                                </Border.Background>
-                                            </Border>
-                                        </StackPanel>
+                                        <!--<StackPanel Visibility="Hidden" Margin="0 10 0 0" Orientation="Horizontal">
+                                        <Border Width="50" Height="50" BorderThickness="1" BorderBrush="Black">
+                                        <Border.Background>
+                                        <SolidColorBrush Color="{DynamicResource SystemAccentColor}"/>
+                                        </Border.Background>
+                                        </Border>
+                                        <Border Width="50" Height="50" BorderThickness="1" BorderBrush="Black">
+                                        <Border.Background>
+                                        <SolidColorBrush Color="{DynamicResource SystemAccentColorPrimary}"/>
+                                        </Border.Background>
+                                        </Border>
+                                        <Border Width="50" Height="50" BorderThickness="1" BorderBrush="Black">
+                                        <Border.Background>
+                                        <SolidColorBrush Color="{DynamicResource SystemAccentColorSecondary}"/>
+                                        </Border.Background>
+                                        </Border>
+                                        <Border Width="50" Height="50" BorderThickness="1" BorderBrush="Black">
+                                        <Border.Background>
+                                        <SolidColorBrush Color="{DynamicResource SystemAccentColorTertiary}"/>
+                                        </Border.Background>
+                                        </Border>
+                                        </StackPanel>-->
                                     </StackPanel>
                                 </Border>
                             </StackPanel>

@@ -1,0 +1,244 @@
+﻿<ItemsControl x:Class="AiPrompt.Views.Components.TagsTabComponent"
+              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+              xmlns:local="clr-namespace:AiPrompt.Views.Components"
+              xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+              xmlns:vmPages="clr-namespace:AiPrompt.ViewModels.Pages"
+              xmlns:vm="clr-namespace:AiPrompt.ViewModels.Components"
+              xmlns:models="clr-namespace:AiPrompt.Models"
+              xmlns:helpers="clr-namespace:AiPrompt.Helpers"
+              mc:Ignorable="d"
+              d:DesignHeight="450" d:DesignWidth="800"
+              d:DataContext="{d:DesignInstance Type=local:TagsTabComponent}"
+              >
+    <ItemsControl.Resources>
+        <helpers:BindingProxy x:Key="this" Value="{Binding}"/>
+
+        <helpers:PromptSelectedToBorderBrush x:Key="PromptSelectedToBorderBrush" />
+        <helpers:PathToImageBrushConverter x:Key="PathToImageBrushConverter"/>
+        <helpers:WeightToNumberStringConverter x:Key="WeightToNumberStringConverter" />
+
+        <PowerEase x:Key="FadeIn" EasingMode="EaseIn" />
+        <PowerEase x:Key="FadeOut" EasingMode="EaseOut" />
+
+        <!--Prompt按钮样式-->
+        <Style x:Key="ImageButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="BorderThickness" Value="1" />
+            <!--<Setter Property="Opacity" Value=".5"/>-->
+
+            <!--按钮的模板-->
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border
+                            x:Name="ContentBorder"
+                            Width="{TemplateBinding Width}"
+                            Height="{TemplateBinding Height}"
+                            MinWidth="{TemplateBinding MinWidth}"
+                            MinHeight="{TemplateBinding MinHeight}"
+                            Padding="{TemplateBinding Padding}"
+                            HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                            VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{TemplateBinding Border.CornerRadius}"
+                            >
+                            <ContentPresenter
+                                x:Name="ContentPresenter"
+                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                Content="{TemplateBinding Content}"
+                                ContentTemplate="{TemplateBinding ContentTemplate}"
+                                TextElement.Foreground="{TemplateBinding Foreground}"
+                                />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+            <!--按下触发器-->
+            <Style.Triggers>
+                <Trigger Property="IsPressed" Value="True">
+                    <!--按下开始动画-->
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1" To="0.8" Duration="0:0:0.1" EasingFunction="{StaticResource FadeIn}" />
+                                <DoubleAnimation Storyboard.TargetProperty="Width" From="{x:Static vmPages:TagsViewModel.PromptImageSize}" To="{x:Static vmPages:TagsViewModel.PromptImageSizeSmall}" Duration="0:0:0.1" EasingFunction="{StaticResource FadeIn}" />
+                                <DoubleAnimation Storyboard.TargetProperty="Height" From="{x:Static vmPages:TagsViewModel.PromptImageSize}" To="{x:Static vmPages:TagsViewModel.PromptImageSizeSmall}" Duration="0:0:0.1" EasingFunction="{StaticResource FadeIn}" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+
+                    <!--按下结束动画-->
+                    <Trigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0.8" To="1" Duration="0:0:0.1" EasingFunction="{StaticResource FadeOut}" />
+                                <DoubleAnimation Storyboard.TargetProperty="Width" From="{x:Static vmPages:TagsViewModel.PromptImageSizeSmall}" To="{x:Static vmPages:TagsViewModel.PromptImageSize}" Duration="0:0:0.1" EasingFunction="{StaticResource FadeOut}" />
+                                <DoubleAnimation Storyboard.TargetProperty="Height" From="{x:Static vmPages:TagsViewModel.PromptImageSizeSmall}" To="{x:Static vmPages:TagsViewModel.PromptImageSize}" Duration="0:0:0.1" EasingFunction="{StaticResource FadeOut}" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.ExitActions>
+                </Trigger>
+
+                <!--鼠标悬浮触发器-->
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="BorderBrush" Value="#B898DC" />
+                    <Setter Property="BorderThickness" Value="2"/>
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ThicknessAnimation Storyboard.TargetProperty="BorderThickness" From="0.25" To="2" Duration="0:0:0.1" />
+                                <ColorAnimation Storyboard.TargetProperty="BorderBrush.Color" From="Gray" To="#B898DC" Duration="0:0:0.1"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+                    <Trigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ThicknessAnimation Storyboard.TargetProperty="BorderThickness" From="2" To="0.25" Duration="0:0:0.1" />
+                                <ColorAnimation Storyboard.TargetProperty="BorderBrush.Color" From="#B898DC" To="Gray" Duration="0:0:0.1"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.ExitActions>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="False">
+                    <Setter Property="BorderBrush" Value="Gray"/>
+                    <Setter Property="BorderThickness" Value="0.25"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+    </ItemsControl.Resources>
+
+    <ItemsControl.ItemsPanel>
+        <ItemsPanelTemplate>
+            <StackPanel Orientation="Vertical" />
+        </ItemsPanelTemplate>
+    </ItemsControl.ItemsPanel>
+
+    <ItemsControl.ItemTemplate>
+        <DataTemplate>
+            <!-- Block内容 -->
+            <StackPanel Orientation="Vertical" Margin="0">
+                <StackPanel.Style>
+                    <Style TargetType="StackPanel">
+                        <!--淡入效果动画-->
+                        <Style.Triggers>
+                            <EventTrigger RoutedEvent="Loaded">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" From=".5" To="1" Duration="0:0:0.4">
+                                            <DoubleAnimation.EasingFunction>
+                                                <CircleEase EasingMode="EaseOut"></CircleEase>
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                        <ThicknessAnimation Storyboard.TargetProperty="Margin" From="0 8 0 0" To="0 0 0 0" Duration="0:0:0.4">
+                                            <ThicknessAnimation.EasingFunction>
+                                                <CubicEase EasingMode="EaseOut"></CubicEase>
+                                            </ThicknessAnimation.EasingFunction>
+                                        </ThicknessAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </StackPanel.Style>
+                <local:TestComponent></local:TestComponent>
+
+                <TextBlock Text="{Binding Title}" Margin="5 5 0 0" Foreground="{DynamicResource TextFillColorPrimaryBrush}" FontSize="16" FontWeight="Bold"/>
+                <ItemsControl ItemsSource="{Binding Items}" Margin="0 10 0 10">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <!-- Item -->
+                            <Border CornerRadius="5" BorderBrush="{Binding Config.IsSelected,Converter={StaticResource PromptSelectedToBorderBrush}}" BorderThickness="2" Margin="0 0 10 10">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="auto"/>
+                                        <RowDefinition Height="auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid Grid.Row="0" Width="{x:Static vmPages:TagsViewModel.PromptImageSize}" Height="{x:Static vmPages:TagsViewModel.PromptImageSize}">
+                                        <ui:Button
+                                            Name="ImageButton"
+                                            Grid.Row="0"
+                                            Width="{x:Static vmPages:TagsViewModel.PromptImageSize}"
+                                            Height="{x:Static vmPages:TagsViewModel.PromptImageSize}"
+                                            AllowDrop="True"
+                                            Drop="Button_Drop"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            Style="{StaticResource ImageButtonStyle}"
+                                            FontSize="25"
+                                            Command="{Binding Source={StaticResource this},Path=Value.ViewModel.PromptImageCommand}"
+                                            CommandParameter="{Binding}"
+                                            >
+                                            <!--Background="{Binding Image,Mode=OneWay,Converter={StaticResource PathToImageBrushConverter},ConverterParameter={x:Static Stretch.UniformToFill}}"-->
+                                            <ui:Button.Background>
+                                                <MultiBinding Converter="{StaticResource PathToImageBrushConverter}" ConverterParameter="{x:Static Stretch.UniformToFill}">
+                                                    <Binding Path="." />
+                                                    <Binding Path="Image"/>
+                                                </MultiBinding>
+                                            </ui:Button.Background>
+
+                                            <!--<ui:Button.InputBindings>
+                                            <MouseBinding Gesture="Control+LeftClick" Command="{Binding Source={x:Reference Name=CurrentControl},Path=ViewModel.WeightIncCommand}" CommandParameter="{Binding}"/>
+                                            <MouseBinding Gesture="Shift+LeftClick" Command="{Binding Source={x:Reference Name=CurrentControl},Path=ViewModel.WeightDecCommand}" CommandParameter="{Binding}"/>
+                                            </ui:Button.InputBindings>-->
+
+                                            <!--右键菜单-->
+                                            <ui:Button.ContextMenu>
+                                                <!--<ContextMenu FontSize="14" Background="{Binding Source={x:Static models:GlobalResources.Instance},Path=PrimaryColor}">-->
+                                                <ContextMenu FontSize="14">
+                                                    <MenuItem Header="复制" Command="{Binding Source={StaticResource this},Path=Value.ViewModel.CopyCurrentTagCommand}" CommandParameter="{Binding}" />
+                                                    <MenuItem Header="重置权重" Command="{Binding Source={StaticResource this},Path=Value.ViewModel.WeightResetCommand}" CommandParameter="{Binding}" />
+                                                    <MenuItem Header="增加权重(+)" Command="{Binding Source={StaticResource this},Path=Value.ViewModel.WeightIncCommand}" CommandParameter="{Binding}" />
+                                                    <MenuItem Header="减少权重(-)" Command="{Binding Source={StaticResource this},Path=Value.ViewModel.WeightDecCommand}" CommandParameter="{Binding}" />
+                                                </ContextMenu>
+                                            </ui:Button.ContextMenu>
+                                        </ui:Button>
+                                    </Grid>
+
+                                    <!--<Border Grid.Row="0" CornerRadius="5" Margin="2" Width="140" Height="140" Background="Transparent">
+                                    <b:Interaction.Behaviors>
+                                    <local:CustomButtonBehavior Button="{x:Reference Name=ImageButton}" />
+                                    </b:Interaction.Behaviors>
+                                    </Border>-->
+
+                                    <Label Grid.Row="1" Width="{x:Static vmPages:TagsViewModel.PromptImageSize}" Foreground="{DynamicResource TextFillColorPrimaryBrush}" HorizontalContentAlignment="Center" Content="{Binding PromptCN,Mode=OneWay}" Margin="0 4 0 0"/>
+                                    <Label Grid.Row="2" Width="{x:Static vmPages:TagsViewModel.PromptImageSize}" Foreground="{DynamicResource TextFillColorPrimaryBrush}" HorizontalContentAlignment="Center" Content="{Binding PromptEN,Mode=OneWay}"/>
+
+                                    <Border Grid.ColumnSpan="99" Grid.RowSpan="99"
+                                            Visibility="{Binding Config.IsSelected,Converter={helpers:BooleanToVisibilityConverter}}"
+                                            Margin="-10 -5" Padding="5 1"
+                                            CornerRadius="5"
+                                            VerticalAlignment="Bottom" HorizontalAlignment="Right"
+                                            Background="{Binding Source={x:Static models:GlobalResources.Instance},Path=PrimaryColor}">
+                                        <TextBlock Foreground="White">
+                                            <TextBlock.Text>
+                                                <MultiBinding Converter="{StaticResource WeightToNumberStringConverter}">
+                                                    <Binding Path="Config.IsSelected"/>
+                                                    <Binding Path="Config.Weight"/>
+                                                </MultiBinding>
+                                            </TextBlock.Text>
+                                        </TextBlock>
+                                    </Border>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </DataTemplate>
+    </ItemsControl.ItemTemplate>
+
+</ItemsControl>

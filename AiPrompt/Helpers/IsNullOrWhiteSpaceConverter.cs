@@ -4,26 +4,20 @@ using System.Windows.Markup;
 
 namespace AiPrompt.Helpers;
 
-public class BooleanToVisibilityConverter : MarkupExtension, IValueConverter
+public class IsNullOrWhiteSpaceToStringConverter : MarkupExtension, IValueConverter
 {
-    private static readonly BooleanToVisibilityConverter _instance = new();
+    private static readonly IsNullOrWhiteSpaceToStringConverter _instance = new();
 
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        if (value is bool isVisibility && isVisibility)
-        {
-            return Visibility.Visible;
-        }
-        return Visibility.Hidden;
+        if (string.IsNullOrWhiteSpace(value?.ToString()))
+            return parameter;
+        return value;
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        if (value is Visibility visibility && visibility == Visibility.Visible)
-        {
-            return true;
-        }
-        return false;
+        return Binding.DoNothing;
     }
 
     public override object ProvideValue(IServiceProvider serviceProvider)

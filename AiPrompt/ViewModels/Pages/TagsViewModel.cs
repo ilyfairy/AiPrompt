@@ -4,8 +4,10 @@
 // All Rights Reserved.
 
 using AiPrompt.Helpers;
+using AiPrompt.Messages;
 using AiPrompt.Models;
 using AiPrompt.Services;
+using CommunityToolkit.Mvvm.Messaging;
 using PropertyChanged;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
@@ -13,7 +15,7 @@ using Wpf.Ui.Controls;
 
 namespace AiPrompt.ViewModels.Pages;
 
-public partial class TagsViewModel(AppConfigService configService, GlobalResources resources, TagsService tagsService) : ObservableObject, INavigationAware
+public partial class TagsViewModel : ObservableObject, INavigationAware, IRecipient<SelectPromptItemMessage>, IRecipient<PromptTextUpdateMessage>
 {
     public static double PromptImageSize { get; } = 190;
     public static double PromptImageSizeSmall { get; } = 180;
@@ -21,9 +23,19 @@ public partial class TagsViewModel(AppConfigService configService, GlobalResourc
 
     private bool _initialized = false;
 
-    public AppConfigService ConfigService { get; set; } = configService;
-    public GlobalResources Resources { get; set; } = resources;
-    public TagsService TagsService { get; set; } = tagsService;
+    public TagsViewModel(AppConfigService configService, GlobalResources resources, TagsService tagsService,IMessenger messenger)
+    {
+        ConfigService = configService;
+        Resources = resources;
+        TagsService = tagsService;
+
+        messenger.Register<SelectPromptItemMessage>(this);
+        messenger.Register<PromptTextUpdateMessage>(this);
+    }
+
+    public AppConfigService ConfigService { get; set; }
+    public GlobalResources Resources { get; set; }
+    public TagsService TagsService { get; set; }
     public PromptTab? CurrentTab { get; set; }
 
     [AlsoNotifyFor(nameof(PositivePromptText), nameof(PositivePromptText))]
@@ -143,10 +155,10 @@ public partial class TagsViewModel(AppConfigService configService, GlobalResourc
         }
     }
 
-
-    [RelayCommand]
-    public void OnPromptImage(PromptItem item)
+    //接收到TagsTabComponent的消息
+    public void Receive(SelectPromptItemMessage message)
     {
+        var item = message.PromptItem;
         if (Keyboard.Modifiers is ModifierKeys.Control)
         {
             OnWeightInc(item);
@@ -161,40 +173,35 @@ public partial class TagsViewModel(AppConfigService configService, GlobalResourc
         Select(item);
     }
 
-    #region 图片右键菜单
-    [RelayCommand]
-    public void CopyCurrentTag(PromptItem item)
-    {
-        Utils.SetClipboardText(item.PromptEN);
-    }
+    #region 鼠标右键菜单
 
     [RelayCommand]
     public void OnWeightReset(PromptItem item)
     {
         item.Config.Weight = 0;
-        OnPropertyChanged(nameof(PositivePromptText));
-        OnPropertyChanged(nameof(NegativePromptText));
+        Receive(PromptTextUpdateMessage.Instance);
     }
-
 
     [RelayCommand]
     public void OnWeightInc(PromptItem item)
     {
         item.Config.Weight++;
-        OnPropertyChanged(nameof(PositivePromptText));
-        OnPropertyChanged(nameof(NegativePromptText));
+        Receive(PromptTextUpdateMessage.Instance);
     }
-
 
     [RelayCommand]
     public void OnWeightDec(PromptItem item)
     {
         item.Config.Weight--;
+        Receive(PromptTextUpdateMessage.Instance);
+    }
+
+    public void Receive(PromptTextUpdateMessage message)
+    {
         OnPropertyChanged(nameof(PositivePromptText));
         OnPropertyChanged(nameof(NegativePromptText));
     }
     #endregion
-
 
 
     #region 正面提示词
@@ -275,6 +282,7 @@ public partial class TagsViewModel(AppConfigService configService, GlobalResourc
         NegativePromptItems.Clear();
         OnPropertyChanged(nameof(NegativePromptText));
     }
+
 
     #endregion
 

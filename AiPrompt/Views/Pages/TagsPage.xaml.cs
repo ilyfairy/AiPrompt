@@ -10,7 +10,7 @@ namespace AiPrompt.Views.Pages;
 
 public partial class TagsPage : Wpf.Ui.Controls.INavigableView<TagsViewModel>
 {
-    private readonly TagsService tagsService;
+    private readonly TagsService _tagsService;
     private readonly ILogger<TagsPage> _logger;
     private readonly SerializerService _serializerService;
 
@@ -19,7 +19,7 @@ public partial class TagsPage : Wpf.Ui.Controls.INavigableView<TagsViewModel>
     public TagsPage(TagsViewModel viewModel, TagsService tagsService, ILogger<TagsPage> logger, SerializerService serializerService)
     {
         ViewModel = viewModel;
-        this.tagsService = tagsService;
+        _tagsService = tagsService;
         _logger = logger;
         _serializerService = serializerService;
         DataContext = this;
@@ -27,67 +27,6 @@ public partial class TagsPage : Wpf.Ui.Controls.INavigableView<TagsViewModel>
         InitializeComponent();
     }
 
-    //拖拽图片过来
-    private async void Button_Drop(object sender, DragEventArgs e)
-    {
-        if (e.Source is FrameworkElement { DataContext: PromptItem item })
-        {
-            try
-            {
-                //dir 需要存放图片的文件夹
-                var dir = Path.Combine(ViewModel.ConfigService.Config.ImageDropPath, item.Parent?.Parent?.Title ?? "", item.Parent?.Title ?? "");
-                if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
-
-                //如果是图片
-                if (e.Data.GetDataPresent(DataFormats.Bitmap))
-                {
-                    if (e.Data.GetData(DataFormats.Bitmap) is Bitmap bitmap)
-                    {
-                        var path = Path.Combine(dir, $"{item.PromptCN.Replace(" ", "")}.png");
-                        bitmap.Save(path);
-                        item.IsImageRelativeTag = false;
-                        item.Image = null;
-                        item.Image = path;
-                    }
-                }
-                //如果是文件路径
-                else if (e.Data.GetDataPresent(DataFormats.FileDrop))
-                {
-                    if (e.Data.GetData(DataFormats.FileDrop) is string[] and [var file])
-                    {
-                        var path = Path.Combine(dir, $"{item.PromptCN.Replace(" ", "")}{Path.GetExtension(file)}");
-                        File.Copy(file, path, true);
-                        item.IsImageRelativeTag = false;
-                        item.Image = null;
-                        item.Image = path;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "拖拽异常");
-                return;
-            }
-
-            foreach (var (tab, filePath) in tagsService.TabFileMap)
-            {
-                if (tab == item?.Parent?.Parent)
-                {
-                    //var json = JsonSerializer.Serialize(item.Parent.Parent, ViewModel.Resources.JsonOptions);
-                    try
-                    {
-                        var content = _serializerService.Serialize(item.Parent.Parent);
-                        await File.WriteAllTextAsync(filePath, content);
-                    }
-                    catch(Exception ex)
-                    {
-                        _logger.LogError(ex, "拖拽保存配置文件失败");
-                    }
-                    break;
-                }
-            }
-        }
-    }
 
     private void ToggleSwitch_Click(object sender, RoutedEventArgs e)
     {
@@ -104,4 +43,5 @@ public partial class TagsPage : Wpf.Ui.Controls.INavigableView<TagsViewModel>
     {
         e.Handled = true;
     }
+
 }

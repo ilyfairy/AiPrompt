@@ -9,6 +9,7 @@ using AiPrompt.ViewModels.Pages;
 using AiPrompt.ViewModels.Windows;
 using AiPrompt.Views.Pages;
 using AiPrompt.Views.Windows;
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -61,6 +62,9 @@ public partial class App
             services.AddSingleton<TagsService>();
             services.AddSingleton<AppConfigService>();
             services.AddSingleton<SerializerService>();
+            services.AddSingleton<TagsTabCacheService>();
+
+            services.AddSingleton<IMessenger>(WeakReferenceMessenger.Default);
         })
         .ConfigureLogging(logging =>
         {
