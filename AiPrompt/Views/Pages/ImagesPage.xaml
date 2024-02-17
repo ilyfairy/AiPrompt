@@ -28,7 +28,6 @@
     </Page.InputBindings>
 
     <Page.Resources>
-        <helpers:PathToImageBrushConverter x:Key="PathToImageBrushConverter"/>
         <helpers:SizeBalanceConverter x:Key="SizeBalanceConverter"/>
         <helpers:Double4ToRectConverter x:Key="Double4ToRectConverter"/>
         <helpers:StringConcatConverter x:Key="StringConcatConverter"/>

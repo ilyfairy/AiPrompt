@@ -9,6 +9,8 @@
               xmlns:vm="clr-namespace:AiPrompt.ViewModels.Components"
               xmlns:models="clr-namespace:AiPrompt.Models"
               xmlns:helpers="clr-namespace:AiPrompt.Helpers"
+              xmlns:components="clr-namespace:AiPrompt.Views.Components"
+              xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
               mc:Ignorable="d"
               d:DesignHeight="450" d:DesignWidth="800"
               d:DataContext="{d:DesignInstance Type=local:TagsTabComponent}"
@@ -17,7 +19,7 @@
         <helpers:BindingProxy x:Key="this" Value="{Binding}"/>
 
         <helpers:PromptSelectedToBorderBrush x:Key="PromptSelectedToBorderBrush" />
-        <helpers:PathToImageBrushConverter x:Key="PathToImageBrushConverter"/>
+        <helpers:PathAsyncToControlBackgroundImageBrushConverter x:Key="PathToImageBrushConverter"/>
         <helpers:WeightToNumberStringConverter x:Key="WeightToNumberStringConverter" />
 
         <PowerEase x:Key="FadeIn" EasingMode="EaseIn" />
@@ -160,7 +162,8 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <!-- Item -->
-                            <Border CornerRadius="5" BorderBrush="{Binding Config.IsSelected,Converter={StaticResource PromptSelectedToBorderBrush}}" BorderThickness="2" Margin="0 0 10 10">
+                            <Border CornerRadius="5" BorderThickness="2" Margin="0 0 10 10"
+                                    BorderBrush="{Binding Config.IsSelected,Converter={StaticResource PromptSelectedToBorderBrush}}">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="*"/>
@@ -168,6 +171,34 @@
                                         <RowDefinition Height="auto"/>
                                     </Grid.RowDefinitions>
                                     <Grid Grid.Row="0" Width="{x:Static vmPages:TagsViewModel.PromptImageSize}" Height="{x:Static vmPages:TagsViewModel.PromptImageSize}">
+                                        <components:AsyncImage x:Name="AsyncImageName"
+                                                               PromptItem="{Binding}"
+                                                               Width="{Binding ElementName=ImageButton,Path=ActualWidth}"
+                                                               Height="{Binding ElementName=ImageButton,Path=ActualHeight}"
+                                                               Margin="1"
+
+                                                               >
+                                            <!--<b:Interaction.Behaviors>
+                                            <helpers:FrameworkElementCornerBehavior CornerRadius="5" />
+                                            </b:Interaction.Behaviors>-->
+                                            <!--<components:AsyncImage.Clip>
+                                            <RectangleGeometry Rect="{Binding ElementName=AsyncImageName,Converter={helpers:FrameworkElementActualSizeConverter}}"
+                                            RadiusX="5" RadiusY="5"
+                                            />
+                                            </components:AsyncImage.Clip>-->
+                                            <components:AsyncImage.Clip>
+                                                <RectangleGeometry RadiusX="5" RadiusY="5">
+                                                    <RectangleGeometry.Rect>
+                                                        <MultiBinding Converter="{helpers:Double4ToRectConverter}">
+                                                            <Binding Source="0"/>
+                                                            <Binding Source="0"/>
+                                                            <Binding ElementName="AsyncImageName" Path="ActualWidth"/>
+                                                            <Binding ElementName="AsyncImageName" Path="ActualHeight"/>
+                                                        </MultiBinding>
+                                                    </RectangleGeometry.Rect>
+                                                </RectangleGeometry>
+                                            </components:AsyncImage.Clip>
+                                        </components:AsyncImage>
                                         <ui:Button
                                             Name="ImageButton"
                                             Grid.Row="0"
@@ -178,17 +209,20 @@
                                             HorizontalAlignment="Center"
                                             VerticalAlignment="Center"
                                             Style="{StaticResource ImageButtonStyle}"
+                                            Background="Transparent"
                                             FontSize="25"
                                             Command="{Binding Source={StaticResource this},Path=Value.ViewModel.PromptImageCommand}"
                                             CommandParameter="{Binding}"
                                             >
                                             <!--Background="{Binding Image,Mode=OneWay,Converter={StaticResource PathToImageBrushConverter},ConverterParameter={x:Static Stretch.UniformToFill}}"-->
-                                            <ui:Button.Background>
-                                                <MultiBinding Converter="{StaticResource PathToImageBrushConverter}" ConverterParameter="{x:Static Stretch.UniformToFill}">
-                                                    <Binding Path="." />
-                                                    <Binding Path="Image"/>
-                                                </MultiBinding>
-                                            </ui:Button.Background>
+                                            <!-- PromptItem 和 路径 -->
+                                            <!--<ui:Button.Background>
+                                            <MultiBinding Converter="{StaticResource PathToImageBrushConverter}" ConverterParameter="{x:Static Stretch.UniformToFill}">
+                                            <Binding Path="." />
+                                            <Binding Path="Image"/>
+                                            <Binding Path="." ElementName="ImageButton"/>
+                                            </MultiBinding>
+                                            </ui:Button.Background>-->
 
                                             <!--<ui:Button.InputBindings>
                                             <MouseBinding Gesture="Control+LeftClick" Command="{Binding Source={x:Reference Name=CurrentControl},Path=ViewModel.WeightIncCommand}" CommandParameter="{Binding}"/>

@@ -22,6 +22,9 @@ public class TagsTabCacheService
 
     public TagsTabComponent Get(PromptTab promptTab)
     {
+        if (promptTab is null)
+            return new TagsTabComponent();
+
         if (cache.TryGetValue(promptTab, out var control))
         {
             return control;
@@ -33,13 +36,13 @@ public class TagsTabCacheService
 
             Task.Run(() =>
             {
-                // 使用Dispatcher在UI线程上添加数据到newControl
+                // 使用Dispatcher在UI线程上添加数据到new Control
                 Application.Current.Dispatcher.Invoke(async () =>
                 {
-                    foreach (var item in promptTab.Items)
+                    foreach (var block in promptTab.Items)
                     {
-                        await Task.Delay(50);
-                        newControl.Items.Add(item);
+                        await Task.Delay(100);
+                        newControl.Items.Add(block);
                     }
                 });
             });
