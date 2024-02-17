@@ -1,0 +1,3 @@
+[submodule "ImageSizeReader"]
+	path = ImageSizeReader
+	url = https://github.com/ilyfairy/ImageSizeReader
