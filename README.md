@@ -1,4 +1,5 @@
 # AiPrompt
 
-AiPrompt是一个NovelAi的提示词生成工具
+StableDiffusion鐨勬彁绀鸿瘝鐢熸垚宸ュ叿
 
+![preview](image1.png)
