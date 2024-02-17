@@ -171,36 +171,29 @@
                                         <RowDefinition Height="auto"/>
                                     </Grid.RowDefinitions>
                                     <Grid Grid.Row="0" Width="{x:Static vmPages:TagsViewModel.PromptImageSize}" Height="{x:Static vmPages:TagsViewModel.PromptImageSize}">
-                                        <components:AsyncImage x:Name="AsyncImageName"
-                                                               PromptItem="{Binding}"
-                                                               Width="{Binding ElementName=ImageButton,Path=ActualWidth}"
-                                                               Height="{Binding ElementName=ImageButton,Path=ActualHeight}"
-                                                               Margin="1"
+                                        <!--<components:AsyncImage x:Name="AsyncImageName"
+                                        PromptItem="{Binding}"
+                                        Width="{Binding ElementName=ImageButton,Path=ActualWidth}"
+                                        Height="{Binding ElementName=ImageButton,Path=ActualHeight}"
+                                        Margin="1"
+                                        >
 
-                                                               >
-                                            <!--<b:Interaction.Behaviors>
-                                            <helpers:FrameworkElementCornerBehavior CornerRadius="5" />
-                                            </b:Interaction.Behaviors>-->
-                                            <!--<components:AsyncImage.Clip>
-                                            <RectangleGeometry Rect="{Binding ElementName=AsyncImageName,Converter={helpers:FrameworkElementActualSizeConverter}}"
-                                            RadiusX="5" RadiusY="5"
-                                            />
-                                            </components:AsyncImage.Clip>-->
-                                            <components:AsyncImage.Clip>
-                                                <RectangleGeometry RadiusX="5" RadiusY="5">
-                                                    <RectangleGeometry.Rect>
-                                                        <MultiBinding Converter="{helpers:Double4ToRectConverter}">
-                                                            <Binding Source="0"/>
-                                                            <Binding Source="0"/>
-                                                            <Binding ElementName="AsyncImageName" Path="ActualWidth"/>
-                                                            <Binding ElementName="AsyncImageName" Path="ActualHeight"/>
-                                                        </MultiBinding>
-                                                    </RectangleGeometry.Rect>
-                                                </RectangleGeometry>
-                                            </components:AsyncImage.Clip>
-                                        </components:AsyncImage>
-                                        <ui:Button
-                                            Name="ImageButton"
+                                        <components:AsyncImage.Clip>
+                                        <RectangleGeometry RadiusX="5" RadiusY="5">
+                                        <RectangleGeometry.Rect>
+                                        <MultiBinding Converter="{helpers:Double4ToRectConverter}">
+                                        <Binding Source="0"/>
+                                        <Binding Source="0"/>
+                                        <Binding ElementName="AsyncImageName" Path="ActualWidth"/>
+                                        <Binding ElementName="AsyncImageName" Path="ActualHeight"/>
+                                        </MultiBinding>
+                                        </RectangleGeometry.Rect>
+                                        </RectangleGeometry>
+                                        </components:AsyncImage.Clip>
+                                        </components:AsyncImage>-->
+
+                                        <components:AsyncButton
+                                            x:Name="ImageButton"
                                             Grid.Row="0"
                                             Width="{x:Static vmPages:TagsViewModel.PromptImageSize}"
                                             Height="{x:Static vmPages:TagsViewModel.PromptImageSize}"
@@ -213,7 +206,9 @@
                                             FontSize="25"
                                             Command="{Binding Source={StaticResource this},Path=Value.ViewModel.PromptImageCommand}"
                                             CommandParameter="{Binding}"
+                                            PromptItem="{Binding}"
                                             >
+
                                             <!--Background="{Binding Image,Mode=OneWay,Converter={StaticResource PathToImageBrushConverter},ConverterParameter={x:Static Stretch.UniformToFill}}"-->
                                             <!-- PromptItem 和 路径 -->
                                             <!--<ui:Button.Background>
@@ -239,7 +234,7 @@
                                                     <MenuItem Header="减少权重(-)" Command="{Binding Source={StaticResource this},Path=Value.ViewModel.WeightDecCommand}" CommandParameter="{Binding}" />
                                                 </ContextMenu>
                                             </ui:Button.ContextMenu>
-                                        </ui:Button>
+                                        </components:AsyncButton>
                                     </Grid>
 
                                     <!--<Border Grid.Row="0" CornerRadius="5" Margin="2" Width="140" Height="140" Background="Transparent">
