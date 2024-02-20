@@ -30,7 +30,7 @@ public partial class TagsTabComponent : ItemsControl
         _logger = App.GetService<ILogger<TagsTabComponent>>()!;
         _serializerService = App.GetService<SerializerService>()!;
         InitializeComponent();
-
+        
         _logger.LogInformation("创建TagsTabComponent实例");
     }
 

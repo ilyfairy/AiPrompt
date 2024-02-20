@@ -7,6 +7,7 @@ using System.Windows.Input;
 using AiPrompt.Helpers;
 using AiPrompt.Messages;
 using AiPrompt.Models;
+using AiPrompt.Services;
 using CommunityToolkit.Mvvm.Messaging;
 
 namespace AiPrompt.ViewModels.Components;
@@ -14,10 +15,12 @@ namespace AiPrompt.ViewModels.Components;
 public partial class TagsTabComponentViewModel
 {
     private readonly IMessenger _messenger;
+    public AppConfigService AppConfigService { get; private set; }
 
     public TagsTabComponentViewModel()
     {
         _messenger = App.GetService<IMessenger>()!;
+        AppConfigService = App.GetService<AppConfigService>()!;
     }
 
     [RelayCommand]
@@ -57,6 +60,20 @@ public partial class TagsTabComponentViewModel
     {
         item.Config.Weight--;
         _messenger.Send(PromptTextUpdateMessage.Instance);
+    }
+
+    [RelayCommand]
+    public void OnSetHiddenCN()
+    {
+        AppConfigService.Config.IsHiddenCN ^= true;
+        AppConfigService.Save();
+    }
+
+    [RelayCommand]
+    public void OnSetHiddenEN()
+    {
+        AppConfigService.Config.IsHiddenEN ^= true;
+        AppConfigService.Save();
     }
     #endregion
 

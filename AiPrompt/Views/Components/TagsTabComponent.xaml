@@ -232,6 +232,10 @@
                                                     <MenuItem Header="重置权重" Command="{Binding Source={StaticResource this},Path=Value.ViewModel.WeightResetCommand}" CommandParameter="{Binding}" />
                                                     <MenuItem Header="增加权重(+)" Command="{Binding Source={StaticResource this},Path=Value.ViewModel.WeightIncCommand}" CommandParameter="{Binding}" />
                                                     <MenuItem Header="减少权重(-)" Command="{Binding Source={StaticResource this},Path=Value.ViewModel.WeightDecCommand}" CommandParameter="{Binding}" />
+                                                    <MenuItem Header="{Binding Source={StaticResource this},Path=Value.ViewModel.AppConfigService.Config.IsHiddenCN,Converter={helpers:StringIfElseConverter},ConverterParameter='显示中文|隐藏中文'}"
+                                                              Command="{Binding Source={StaticResource this},Path=Value.ViewModel.SetHiddenCNCommand}" CommandParameter="{Binding}" />
+                                                    <MenuItem Header="{Binding Source={StaticResource this},Path=Value.ViewModel.AppConfigService.Config.IsHiddenEN,Converter={helpers:StringIfElseConverter},ConverterParameter='显示英文|隐藏英文'}"
+                                                              Command="{Binding Source={StaticResource this},Path=Value.ViewModel.SetHiddenENCommand}" CommandParameter="{Binding}" />
                                                 </ContextMenu>
                                             </ui:Button.ContextMenu>
                                         </components:AsyncButton>
@@ -243,8 +247,12 @@
                                     </b:Interaction.Behaviors>
                                     </Border>-->
 
-                                    <Label Grid.Row="1" Width="{x:Static vmPages:TagsViewModel.PromptImageSize}" Foreground="{DynamicResource TextFillColorPrimaryBrush}" HorizontalContentAlignment="Center" Content="{Binding PromptCN,Mode=OneWay}" Margin="0 4 0 0"/>
-                                    <Label Grid.Row="2" Width="{x:Static vmPages:TagsViewModel.PromptImageSize}" Foreground="{DynamicResource TextFillColorPrimaryBrush}" HorizontalContentAlignment="Center" Content="{Binding PromptEN,Mode=OneWay}"/>
+                                    <Label Grid.Row="1" Width="{x:Static vmPages:TagsViewModel.PromptImageSize}" Foreground="{DynamicResource TextFillColorPrimaryBrush}" HorizontalContentAlignment="Center" Margin="0 4 0 0"
+                                           Content="{Binding PromptCN,Mode=OneWay}"
+                                           Visibility="{Binding Source={StaticResource this},Path=Value.ViewModel.AppConfigService.Config.IsHiddenCN,Converter={helpers:BooleanToVisibilityConverter},ConverterParameter='true'}"/>
+                                    <Label Grid.Row="2" Width="{x:Static vmPages:TagsViewModel.PromptImageSize}" Foreground="{DynamicResource TextFillColorPrimaryBrush}" HorizontalContentAlignment="Center"
+                                           Content="{Binding PromptEN,Mode=OneWay}"
+                                           Visibility="{Binding Source={StaticResource this},Path=Value.ViewModel.AppConfigService.Config.IsHiddenEN,Converter={helpers:BooleanToVisibilityConverter},ConverterParameter='true'}"/>
 
                                     <Border Grid.ColumnSpan="99" Grid.RowSpan="99"
                                             Visibility="{Binding Config.IsSelected,Converter={helpers:BooleanToVisibilityConverter}}"

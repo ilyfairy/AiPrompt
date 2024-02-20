@@ -20,7 +20,6 @@ public static class Utils
         var scaleY = presentationSource.CompositionTarget.TransformToDevice.M22;
         return (scaleX, scaleY);
     }
-
     public static void SetClipboardText(string text)
     {
         if (!WinApi.OpenClipboard(IntPtr.Zero))
@@ -30,7 +29,7 @@ public static class Utils
 
         int size = text.Length * 2 + 2;
 
-        IntPtr hData = WinApi.GlobalAlloc(0x0042, (nuint)(size)); // 64是文本数据的长度，你可以根据实际情况修改
+        IntPtr hData = WinApi.GlobalAlloc(0x0042, (nuint)(size));
         if (hData == 0)
         {
             WinApi.CloseClipboard();

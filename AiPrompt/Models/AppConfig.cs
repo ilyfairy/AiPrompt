@@ -20,6 +20,11 @@ public class AppConfig : ObservableObject
     public int? WindowWidth { get; set; }
     public int? WindowHeight { get; set; }
 
+    public bool IsHiddenEN { get; set; }
+    public bool IsHiddenCN { get; set; }
+    //public bool IsDisplayImage { get; set; }
+
+
     ///// <summary>
     ///// false: 显示 ((prompt)), 或 [[[prompt]]]<br/>
     ///// true: 显示 (prompt:1.2) 或 (prompt:0.7)
